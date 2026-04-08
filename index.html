@@ -206,7 +206,8 @@
   </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2l22a3oZ2cRcEejxQJPrsqjL5_PD1ck9dDEyz6v2FjIjQKQSgNZmBlJqMMOQyYjlmtw/exec";
+    // 1. ลิงก์ SCRIPT_URL ต้องเป็นลิงก์ล่าสุดที่ขิมได้จากการ Deploy (New Version) นะครับ
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyel0XRfBLYocsx-DALrOcGngmzirC2HisjfaogQvAxSZJwQImdvDwfneI__5is8WRc2g/exec";
 
     function handleLogin(e) {
       if (e) e.preventDefault();
@@ -214,6 +215,7 @@
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value.trim();
 
+      // เปลี่ยนวิธีส่งรหัส: ส่งผ่าน URL ไปหา action=checkLogin ที่เราเขียนเพิ่มใน doGet
       const loginUrl = `${SCRIPT_URL}?action=checkLogin&u=${encodeURIComponent(u)}&p=${encodeURIComponent(p)}`;
 
       // ใช้ fetch เพื่อส่งข้อมูลข้าม Domain จาก GitHub ไป Google
@@ -221,6 +223,7 @@
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+            // ถ้าผ่าน เก็บชื่อพยาบาลลง Session เหมือนเดิม
             sessionStorage.setItem('tpnUser', data.name);
             showMainApp();
           } else {
@@ -239,6 +242,7 @@
       document.getElementById('displayUserName').textContent = sessionStorage.getItem('tpnUser');
       document.getElementById('orderDate').valueAsDate = new Date();
       
+      // ส่วนฟังก์ชันอื่นๆ (พวกเลือก Route, คำนวณ) ให้คงไว้เหมือนเดิมครับ
       document.querySelectorAll('input[name="route"]').forEach(radio => {
         radio.addEventListener('change', filterProductsByRoute);
       });
@@ -246,6 +250,7 @@
       calculateAll();
     }
     
+    // อย่าลืมเช็ค Auto-login จาก Session ด้วยครับ
     window.onload = () => {
       if (sessionStorage.getItem('tpnUser')) {
         showMainApp();
