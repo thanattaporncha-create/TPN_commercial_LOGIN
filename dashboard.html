@@ -122,6 +122,11 @@
   </div>
 
   <script>
+    // ยามเฝ้าประตู: เช็คว่า Login หรือยัง?
+  if (!sessionStorage.getItem('tpnUser')) {
+    alert("⚠️ กรุณาเข้าสู่ระบบก่อนใช้งานนะคะ");
+    window.location.href = "index.html"; // ดีดกลับหน้าแรก
+  }
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwKrGKVfJHfvzE8wdd5i97xEfyV6WtW_SaeERY7fcsjPLV4DOj_HxzEpEgF42z-1wGvg/exec";
     let masterData = [];
 
