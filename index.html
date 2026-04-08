@@ -205,30 +205,52 @@
     </div>
   </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyel0XRfBLYocsx-DALrOcGngmzirC2HisjfaogQvAxSZJwQImdvDwfneI__5is8WRc2g/exec";
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby2l22a3oZ2cRcEejxQJPrsqjL5_PD1ck9dDEyz6v2FjIjQKQSgNZmBlJqMMOQyYjlmtw/exec";
 
-   function handleLogin(e) {
-  if (e) e.preventDefault();
-  const u = document.getElementById('username').value.trim();
-  const p = document.getElementById('password').value.trim();
+    function handleLogin(e) {
+      if (e) e.preventDefault();
+      
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value.trim();
 
-  // ส่งไปเช็คที่หลังบ้าน (Code.gs)
-  google.script.run.withSuccessHandler(function(response) {
-    if (response.success) {
-      sessionStorage.setItem('tpnUser', response.name);
-      showMainApp();
-    } else {
-      alert('❌ รหัสไม่ถูกต้องค่ะ ลองตรวจสอบอีกครั้งนะคะ');
+      const loginUrl = `${SCRIPT_URL}?action=checkLogin&u=${encodeURIComponent(u)}&p=${encodeURIComponent(p)}`;
+
+      // ใช้ fetch เพื่อส่งข้อมูลข้าม Domain จาก GitHub ไป Google
+      fetch(loginUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            sessionStorage.setItem('tpnUser', data.name);
+            showMainApp();
+          } else {
+            alert('❌ รหัสไม่ถูกต้องค่ะ ลองตรวจสอบ Username/Password อีกครั้งนะคะ');
+          }
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อกับระบบ Google');
+        });
     }
-  }).validateAccess(u, p);
-}
 
     function showMainApp() {
       document.getElementById('loginPage').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       document.getElementById('displayUserName').textContent = sessionStorage.getItem('tpnUser');
       document.getElementById('orderDate').valueAsDate = new Date();
+      
+      document.querySelectorAll('input[name="route"]').forEach(radio => {
+        radio.addEventListener('change', filterProductsByRoute);
+      });
+      filterProductsByRoute(); 
+      calculateAll();
+    }
+    
+    window.onload = () => {
+      if (sessionStorage.getItem('tpnUser')) {
+        showMainApp();
+      }
+    };
      // --- ส่วนที่เพิ่มใหม่ ---
   // 1. สั่งให้เวลาเปลี่ยน Route แล้วทำการกรองสินค้าทันที
   document.querySelectorAll('input[name="route"]').forEach(radio => {
