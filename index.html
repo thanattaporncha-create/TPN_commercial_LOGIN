@@ -206,26 +206,23 @@
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw59l1IJDeswt8indS32HEFKz-BuBKbpyVKuHwrIReKmwYqA4SUEQkCtlXARosrenJG/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGUeEcgSbIMWB6jy-MwRnfveegHlvsNsp08-8hA_zY6JRStXjYKI8p3rwCthw--xMh6g/exec";
 
-    const userMap = {
-      'OP': 'ภญ.อรปภา ชัยเลิศวาณิช', 'SK': 'ภญ.ศิริโชค คุณวงศ์กฤต', 'NC': 'ภญ.ณัฐวรรณ ฉ่ำมณี',
-      'TT': 'ภญ.ศิริรัตน์ อิ่มเอมกมล', 'MP': 'ภญ.หนึ่งฤทัย พรหมหาราช', 'PC': 'ภญ.พิชญานิล ชาธรรมา',
-      'CK': 'ภญ.ชนม์นิภา กันหากุล', 'KM': 'ภญ.ธณัฐภรณ์ เจริญกิจตระกูล', 'ST': 'ภญ.สุวิมล ธรรมกุล', 
-      'LS': 'ภญ.ลักษิกา จิตรชื่น', 'SO': 'ภญ.อิสรา โสภัย'
-    };
+   function handleLogin(e) {
+  if (e) e.preventDefault();
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
 
-    function handleLogin(e) {
-      if (e) e.preventDefault();
-      const u = document.getElementById('username').value.trim().toUpperCase();
-      const p = document.getElementById('password').value.trim().toUpperCase();
-      if (u === p && userMap[u]) {
-        sessionStorage.setItem('tpnUser', userMap[u]);
-        showMainApp();
-      } else {
-        alert('❌ รหัสผิดพลาดนะคะ ตรวจสอบรหัส ' + u + ' อีกครั้งค่ะ');
-      }
+  // ส่งไปเช็คที่หลังบ้าน (Code.gs)
+  google.script.run.withSuccessHandler(function(response) {
+    if (response.success) {
+      sessionStorage.setItem('tpnUser', response.name);
+      showMainApp();
+    } else {
+      alert('❌ รหัสไม่ถูกต้องค่ะ ลองตรวจสอบอีกครั้งนะคะ');
     }
+  }).validateAccess(u, p);
+}
 
     function showMainApp() {
       document.getElementById('loginPage').classList.add('hidden');
@@ -525,7 +522,12 @@ window.open("label.html?" + queryString, "_blank");
       }
     }
 
-    window.onload = () => { if (sessionStorage.getItem('tpnUser')) showMainApp(); };
+  window.onload = () => {
+  const savedUser = sessionStorage.getItem('tpnUser');
+  if (savedUser) {
+    showMainApp();
+  }
+};
   </script>
 </body>
 </html>
