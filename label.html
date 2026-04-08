@@ -78,6 +78,11 @@
   <div id="bag-area" class="print-area"></div>
 
   <script>
+    // ยามเฝ้าประตู: เช็คว่า Login หรือยัง?
+  if (!sessionStorage.getItem('tpnUser')) {
+    alert("⚠️ กรุณาเข้าสู่ระบบก่อนใช้งานนะคะ");
+    window.location.href = "index.html"; // ดีดกลับหน้าแรก
+  }
     function formatThaiDate(dateStr) {
       if (!dateStr) return "-";
       const d = new Date(dateStr);
