@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Management | TPN System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Sarabun', sans-serif; background-color: #f0fdf4; }
+    .stock-card { transition: all 0.3s ease; border: 2px solid transparent; }
+    .stock-card:hover { transform: translateY(-5px); border-color: #10b981; }
+    .low-stock { animation: pulse-red 2s infinite; border-color: #ef4444 !important; }
+    @keyframes pulse-red {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .modal { transition: opacity 0.25s ease; }
+  </style>
+</head>
+<body class="p-4 md:p-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-3xl shadow-sm border border-emerald-50">
+      <div>
+        <h1 class="text-3xl font-black text-emerald-900 tracking-tighter uppercase italic">📦 Stock Management</h1>
+        <p class="text-emerald-600 font-bold">ระบบบริหารคลังสินค้า TPN Commercial</p>
+      </div>
+      <a href="index.html" class="bg-emerald-50 text-emerald-600 px-6 py-3 rounded-2xl font-black hover:bg-emerald-100 transition-all border border-emerald-200 shadow-sm">🔙 กลับหน้าหลัก</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10" id="stockGrid">
+      <div class="col-span-full p-10 text-center text-emerald-600 font-bold animate-pulse text-xl">⏳ กำลังโหลดสต็อก...</div>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl shadow-sm border border-emerald-50 mb-8">
+      <div class="flex flex-wrap items-end gap-4">
+        <div>
+          <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">เริ่มวันที่</label>
+          <input type="date" id="startDate" class="p-3 border-2 border-gray-50 rounded-2xl font-bold outline-none focus:border-emerald-500 bg-gray-50/50">
+        </div>
+        <div>
+          <label class="block text-[10px] font-black text-gray-400 mb-1 uppercase tracking-widest">ถึงวันที่</label>
+          <input type="date" id="endDate" class="p-3 border-2 border-gray-50 rounded-2xl font-bold outline-none focus:border-emerald-500 bg-gray-50/50">
+        </div>
+        <div class="flex-1 min-w-[300px]">
+          <label class="block text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest font-bold">📦 เลือก PRODUCT ที่ต้องการดู</label>
+          <select id="filterProduct" class="w-full p-3 border-2 border-blue-50 rounded-2xl font-bold bg-blue-50/30 outline-none focus:border-blue-500">
+            <option value="">-- แสดงทั้งหมด (All Products) --</option>
+            <option value="SMOF kabiven (C-line) 1,477 ml / 1600 kcal">SMOF kabiven (C-line) 1,477 ml</option>
+            <option value="SMOF kabiven (C-line) 986 ml / 1100 kcal">SMOF kabiven (C-line) 986 ml</option>
+            <option value="SMOF kabiven (P-line) 1,904 ml / 1300 kcal">SMOF kabiven (P-line) 1,904 ml</option>
+            <option value="Oliclinomel N/7 (C-line) 1,500 ml / 1800 kcal">Oliclinomel N/7 (C-line)</option>
+            <option value="Oliclinomel N/4 (P-line) 1,500 ml / 910 kcal">Oliclinomel N/4 (P-line)</option>
+            <option value="Nutriflex lipid peri 1,875 ml / 1435 kcal">Nutriflex lipid peri 1,875 ml</option>
+            <option value="Nutriflex lipid VR 1,250 ml / 1475 kcal">Nutriflex lipid VR 1,250 ml</option>
+            <option value="B-Fluid 1,000 ml / 420 kcal">B-Fluid 1,000 ml</option>
+          </select>
+        </div>
+        <button onclick="loadHistory()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black hover:bg-emerald-700 shadow-lg transition-all active:scale-95">🔍 ดูประวัติ Stock Card</button>
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-3xl border border-emerald-50 shadow-sm bg-white">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-emerald-900 text-white uppercase tracking-widest text-xs">
+            <th class="p-6">วัน-เวลา</th>
+            <th class="p-6">รายการ (คนไข้ / กิจกรรม)</th>
+            <th class="p-6 text-center">ประเภท</th>
+            <th class="p-6 text-center">จำนวน</th>
+            <th class="p-6 text-center bg-emerald-800">คงเหลือ</th>
+            <th class="p-6">ผู้ทำรายการ</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody" class="font-bold text-sm">
+          <tr><td colspan="6" class="p-20 text-center text-gray-400 font-bold text-xl italic">กรุณากดปุ่ม "ดูประวัติ Stock Card"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="stockModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+    <div class="modal-overlay absolute w-full h-full bg-black opacity-50"></div>
+    <div class="modal-container bg-white w-full max-w-md mx-auto rounded-3xl shadow-2xl z-50 p-8">
+      <div class="text-center mb-6">
+        <h2 id="modalTitle" class="text-2xl font-black text-emerald-900 uppercase">อัปเดตสต็อก</h2>
+        <p id="modalProductName" class="text-emerald-600 font-bold text-sm"></p>
+      </div>
+      <form onsubmit="handleStockUpdate(event)">
+        <input type="hidden" id="targetProduct">
+        <input type="hidden" id="updateType">
+        <div class="mb-4">
+          <label class="block text-xs font-black text-gray-400 uppercase mb-1">จำนวนถุง</label>
+          <input type="number" id="updateQty" required class="w-full p-4 border-2 border-emerald-50 rounded-2xl text-2xl font-black text-center text-emerald-700 outline-none">
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs font-black text-gray-400 uppercase mb-1">รายละเอียด (ชื่อคนไข้ / เหตุผล)</label>
+          <textarea id="updateReason" required class="w-full p-4 border-2 border-emerald-50 rounded-2xl font-bold outline-none focus:border-emerald-500 bg-gray-50/50" rows="3"></textarea>
+        </div>
+        <div class="flex gap-4">
+          <button type="button" onclick="closeModal()" class="flex-1 bg-gray-100 text-gray-500 py-4 rounded-2xl font-black">ยกเลิก</button>
+          <button type="submit" id="submitBtn" class="flex-1 bg-emerald-600 text-white py-4 rounded-2xl font-black shadow-lg">ยืนยันบันทึก 🚀</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw59l1IJDeswt8indS32HEFKz-BuBKbpyVKuHwrIReKmwYqA4SUEQkCtlXARosrenJG/exec";
+
+    window.onload = () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('startDate').value = today;
+      document.getElementById('endDate').value = today;
+      loadStockStatus();
+    };
+
+    async function loadStockStatus() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getCurrentStock`);
+        const data = await res.json();
+        const grid = document.getElementById('stockGrid');
+        grid.innerHTML = data.map(item => {
+          const isLow = item.balance <= 10;
+          return `
+            <div class="stock-card bg-white p-6 rounded-3xl shadow-sm border border-emerald-50 flex flex-col justify-between ${isLow ? 'low-stock' : ''}">
+              <div>
+                <h3 class="font-black text-emerald-900 leading-tight mb-2 h-10 overflow-hidden text-sm uppercase">${item.name}</h3>
+                <div class="text-4xl font-black ${isLow ? 'text-red-600' : 'text-emerald-700'} mb-1">${item.balance}</div>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ถุงคงเหลือ</span>
+              </div>
+              <div class="flex gap-2 mt-4">
+                <button onclick="openModal('${item.name}', 'IN')" class="flex-1 bg-emerald-50 text-emerald-600 py-2 rounded-xl font-black text-[10px] hover:bg-emerald-600 hover:text-white transition-all">+ เติมของ</button>
+                <button onclick="openModal('${item.name}', 'ADJUST')" class="flex-1 bg-gray-50 text-gray-500 py-2 rounded-xl font-black text-[10px] hover:bg-gray-800 hover:text-white transition-all">🛠️ ADJUST</button>
+              </div>
+            </div>`;
+        }).join('');
+      } catch (e) { console.error(e); }
+    }
+
+    function openModal(name, type) {
+      document.getElementById('targetProduct').value = name;
+      document.getElementById('updateType').value = type;
+      document.getElementById('modalProductName').textContent = name;
+      document.getElementById('modalTitle').textContent = type === 'IN' ? '➕ เติมสต็อก' : '🛠️ ADJUST';
+      document.getElementById('updateReason').value = type === 'IN' ? 'รับสินค้าเข้าคลัง' : '';
+      document.getElementById('stockModal').classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeModal() { document.getElementById('stockModal').classList.add('opacity-0', 'pointer-events-none'); }
+
+    async function handleStockUpdate(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const user = sessionStorage.getItem('tpnUser') || 'Pharmacist';
+      const formData = new URLSearchParams();
+      formData.append("action", "updateStock");
+      formData.append("productName", document.getElementById('targetProduct').value);
+      formData.append("type", document.getElementById('updateType').value);
+      formData.append("qty", document.getElementById('updateQty').value);
+      formData.append("reason", document.getElementById('updateReason').value);
+      formData.append("user", user);
+
+      btn.disabled = true; btn.textContent = "⌛ บันทึก...";
+      try {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData });
+        alert("✅ สำเร็จ!");
+        closeModal(); loadStockStatus(); loadHistory();
+      } catch (err) { alert("❌ Error: " + err.message); }
+      finally { btn.disabled = false; btn.textContent = "ยืนยันบันทึก 🚀"; }
+    }
+
+    async function loadHistory() {
+      const start = document.getElementById('startDate').value;
+      const end = document.getElementById('endDate').value;
+      const selectedProduct = document.getElementById('filterProduct').value;
+      const tbody = document.getElementById('historyBody');
+      tbody.innerHTML = '<tr><td colspan="6" class="p-20 text-center font-black text-emerald-600 animate-pulse text-xl">⏳ กำลังดึงข้อมูล...</td></tr>';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getStockLog&start=${start}&end=${end}`);
+        let data = await res.json();
+        if (selectedProduct !== "") { data = data.filter(log => log.product === selectedProduct); }
+
+        if (!data || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="p-20 text-center text-gray-400 font-bold text-lg italic">❌ ไม่พบประวัติรายการ</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.map(log => {
+          let typeColor = (log.type === "OUT") ? "text-red-500" : (log.type === "IN" ? "text-emerald-600" : "text-orange-500");
+          return `
+            <tr class="hover:bg-emerald-50/50 transition-all border-b border-emerald-50">
+              <td class="p-6 text-gray-500 text-[11px] font-bold">${log.timestamp}</td>
+              <td class="p-6 text-emerald-900 font-black text-lg">${log.reason}</td> <td class="p-6 text-center"><span class="px-3 py-1 rounded-lg bg-gray-100 ${typeColor} font-black text-xs">${log.type}</span></td>
+              <td class="p-6 text-center font-black text-lg">${log.qty > 0 ? '+' : ''}${log.qty}</td>
+              <td class="p-6 text-center font-black text-2xl text-emerald-800 bg-emerald-50/30">${log.balance}</td> <td class="p-6 text-sm font-black text-gray-600">${log.user}</td> </tr>`;
+        }).join('');
+      } catch (err) { tbody.innerHTML = `<tr><td colspan="6" class="p-20 text-center text-red-500">❌ Error: ${err.message}</td></tr>`; }
+    }
+  </script>
+</body>
+</html>
+
