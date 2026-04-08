@@ -206,34 +206,48 @@
   </div>
 
 <script>
-    // 1. ลิงก์ SCRIPT_URL ต้องเป็นลิงก์ล่าสุดที่ขิมได้จากการ Deploy (New Version) นะครับ
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyel0XRfBLYocsx-DALrOcGngmzirC2HisjfaogQvAxSZJwQImdvDwfneI__5is8WRc2g/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzofJ3ox3VvnBDigsqY1t_VpFSIg2aNyqCCsOFnXqDerM9YJGMyfcDwXnRWn4m5zxuxpw/exec";
 
-    function handleLogin(e) {
+   async function handleLogin(e) {
       if (e) e.preventDefault();
       
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value.trim();
+      const loginBtn = e.target.querySelector('button');
 
-      // เปลี่ยนวิธีส่งรหัส: ส่งผ่าน URL ไปหา action=checkLogin ที่เราเขียนเพิ่มใน doGet
+      loginBtn.innerHTML = "⏳ กำลังตรวจสอบ...";
+      loginBtn.disabled = true;
+
+      // 2. สร้าง URL สำหรับส่งไปที่ Google
       const loginUrl = `${SCRIPT_URL}?action=checkLogin&u=${encodeURIComponent(u)}&p=${encodeURIComponent(p)}`;
 
-      // ใช้ fetch เพื่อส่งข้อมูลข้าม Domain จาก GitHub ไป Google
-      fetch(loginUrl)
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            // ถ้าผ่าน เก็บชื่อพยาบาลลง Session เหมือนเดิม
-            sessionStorage.setItem('tpnUser', data.name);
-            showMainApp();
-          } else {
-            alert('❌ รหัสไม่ถูกต้องค่ะ ลองตรวจสอบ Username/Password อีกครั้งนะคะ');
-          }
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อกับระบบ Google');
-        });
+      try {
+        // 3. ใช้ fetch แบบส่งคำขอไปดื้อๆ (Google Apps Script มักจะ Redirect)
+        const response = await fetch(loginUrl);
+        
+        // 4. ตรวจสอบว่า Google ตอบกลับมาไหม
+        if (!response.ok) {
+           throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+          sessionStorage.setItem('tpnUser', data.name);
+          showMainApp();
+        } else {
+          alert('❌ รหัสไม่ถูกต้องนะคะ ตรวจสอบรหัสอีกครั้งค่ะ');
+        }
+
+      } catch (err) {
+        console.error('Login Error:', err);
+        // ถ้าเกิด Error มักจะเป็นเพราะ Deploy ไม่ถูกต้อง หรือ URL ผิด
+        alert('❌ การเชื่อมต่อผิดพลาด: โปรดเช็คว่าขิม Deploy เป็น "Anyone" และใช้ลิงก์ SCRIPT_URL ล่าสุดหรือยังคะ?');
+      } finally {
+        // 5. คืนค่าปุ่มให้กลับมาสวยเหมือนเดิม
+        loginBtn.innerHTML = "เข้าสู่ระบบ 🚀";
+        loginBtn.disabled = false;
+      }
     }
 
     function showMainApp() {
