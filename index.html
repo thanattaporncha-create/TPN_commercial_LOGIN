@@ -206,157 +206,312 @@
     </div>
   </div>
 
-<script>
+  <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxwKrGKVfJHfvzE8wdd5i97xEfyV6WtW_SaeERY7fcsjPLV4DOj_HxzEpEgF42z-1wGvg/exec";
 
-    async function handleLogin(_0xe) {
-      if(_0xe)_0xe.preventDefault();
-      const _0x1=document.getElementById('username').value.trim();
-      const _0x2=document.getElementById('password').value.trim();
-      const _0x3=document.getElementById('loginBtn');
-      const _0x4=document.getElementById('loginError');
-      if(!_0x1||!_0x2){_0x4.textContent="\u26a0\ufe0f \u0e01\u0e23\u0e38\u0e13\u0e32\u0e01\u0e23\u0e2d\u0e01\u0e23\u0e2b\u0e31\u0e2a\u0e1e\u0e19\u0e31\u0e01\u0e07\u0e32\u0e19\u0e41\u0e25\u0e30 Password \u0e04\u0e48\u0e32";_0x4.classList.remove('hidden');return;}
-      _0x3.disabled=true;_0x3.innerHTML="\u23f3 \u0e01\u0e33\u0e25\u0e31\u0e07\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a...";_0x4.classList.add('hidden');
+    // =========================================
+    // ✅ LOGIN ใหม่: ส่งไปเช็คที่ Apps Script
+    // ❌ ไม่มี userMap ใน HTML อีกต่อไป!
+    // =========================================
+    async function handleLogin(e) {
+      if (e) e.preventDefault();
+      
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value.trim();
+      const btn = document.getElementById('loginBtn');
+      const errMsg = document.getElementById('loginError');
+      
+      if (!u || !p) {
+        errMsg.textContent = "⚠️ กรุณากรอกรหัสพนักงานและ Password ค่ะ";
+        errMsg.classList.remove('hidden');
+        return;
+      }
+
+      // แสดง Loading
+      btn.disabled = true;
+      btn.innerHTML = "⏳ กำลังตรวจสอบ...";
+      errMsg.classList.add('hidden');
+
       try {
-        const _0x5=new URLSearchParams();
-        _0x5.append("action","login");_0x5.append("username",_0x1);_0x5.append("password",_0x2);
-        const _0x6=await fetch(SCRIPT_URL,{method:'POST',body:_0x5});
-        const _0x7=await _0x6.json();
-        if(_0x7.success){sessionStorage.setItem('tpnUser',_0x7.name);showMainApp();}
-        else{_0x4.textContent="\u274c \u0e23\u0e2b\u0e31\u0e2a\u0e1c\u0e34\u0e14\u0e1e\u0e25\u0e32\u0e14 \u0e01\u0e23\u0e38\u0e13\u0e32\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e2d\u0e34\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07\u0e04\u0e48\u0e32";_0x4.classList.remove('hidden');_0x3.disabled=false;_0x3.innerHTML="\u0e40\u0e02\u0e49\u0e32\u0e2a\u0e39\u0e48\u0e23\u0e30\u0e1a\u0e1a \ud83d\ude80";}
-      } catch(_0x8){
-        _0x4.textContent="\u274c \u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d\u0e44\u0e21\u0e48\u0e44\u0e14\u0e49 \u0e01\u0e23\u0e38\u0e13\u0e32\u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48\u0e04\u0e48\u0e32";_0x4.classList.remove('hidden');_0x3.disabled=false;_0x3.innerHTML="\u0e40\u0e02\u0e49\u0e32\u0e2a\u0e39\u0e48\u0e23\u0e30\u0e1a\u0e1a \ud83d\ude80";
+        const formData = new URLSearchParams();
+        formData.append("action", "login");
+        formData.append("username", u);
+        formData.append("password", p);
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: formData
+        });
+        
+        const result = await response.json();
+
+        if (result.success) {
+          // ✅ Login สำเร็จ
+          sessionStorage.setItem('tpnUser', result.name);
+          showMainApp();
+        } else {
+          // ❌ รหัสผิด
+          errMsg.textContent = "❌ รหัสผิดพลาด กรุณาตรวจสอบอีกครั้งค่ะ";
+          errMsg.classList.remove('hidden');
+          btn.disabled = false;
+          btn.innerHTML = "เข้าสู่ระบบ 🚀";
+        }
+      } catch (err) {
+        errMsg.textContent = "❌ เชื่อมต่อไม่ได้ กรุณาลองใหม่ค่ะ";
+        errMsg.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = "เข้าสู่ระบบ 🚀";
       }
     }
 
-    function calculateAll() {
-      const _0x9=(id)=>parseFloat(document.getElementById(id).value)||0;
-      const _0x10=parseFloat(document.getElementById('prodVol').textContent)||0;
-      const _0x11=_0x9('vitVol');
-      const _0x12=document.getElementById('vit-max-msg');
-      if((currentVitType==='cernevit'&&_0x11>5)||(currentVitType==='soluvit'&&_0x11>10))_0x12.classList.remove('invisible');
-      else _0x12.classList.add('invisible');
-      let _0x13=0;
-      document.querySelectorAll('.other-vol').forEach(_0x14=>{_0x13+=parseFloat(_0x14.value)||0;});
-      const _0x15=_0x10+_0x9('addamel')+_0x11+_0x9('bco')+_0x9('vitalipid')+_0x13;
-      document.getElementById('totalVolDisplay').textContent=_0x15.toLocaleString();
-      const _0x16=document.getElementById('rateHint');
-      if(_0x15>0){_0x16.textContent=`\u2705 \u0e41\u0e19\u0e30\u0e19\u0e33: ${(_0x15/24).toFixed(1)} ml/hr`;_0x16.style.color="#bef264";}
-      else{_0x16.textContent=`\ud83d\udc49 \u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01 Product...`;_0x16.style.color="#facc15";}
-    }
-
-    async function saveOrder() {
-      const _0x17=document.getElementById('saveBtn');
-      const _0x18=document.getElementById('hn').value;
-      const _0x19=document.getElementById('patientName').value;
-      if(!_0x18||!_0x19){alert("\u26a0\ufe0f \u0e01\u0e23\u0e38\u0e13\u0e32\u0e23\u0e30\u0e1a\u0e38 HN \u0e41\u0e25\u0e30\u0e0a\u0e37\u0e48\u0e2d\u0e04\u0e19\u0e44\u0e02\u0e49\u0e04\u0e48\u0e32");return;}
-      const _0x20=document.getElementById('productSelect');
-      if(_0x20.value===""){alert("\u26a0\ufe0f \u0e01\u0e23\u0e38\u0e13\u0e32\u0e40\u0e25\u0e37\u0e2d\u0e01\u0e1c\u0e25\u0e34\u0e15\u0e20\u0e31\u0e13\u0e11\u0e4c\u0e04\u0e48\u0e32");return;}
-      const _0x21=(id)=>document.getElementById(id).value;
-      const _0x22=(id)=>document.getElementById(id).textContent;
-      const _0x23=new URLSearchParams();
-      _0x23.append("action","saveOrder");
-      _0x23.append("orderDate",_0x21('orderDate'));
-      _0x23.append("hn",_0x18);
-      _0x23.append("patientName",_0x19);
-      _0x23.append("ward",_0x21('wardInput'));
-      _0x23.append("route",document.querySelector('input[name="route"]:checked').value);
-      _0x23.append("bw",_0x21('bw'));
-      _0x23.append("productName",_0x20.options[_0x20.selectedIndex].text);
-      _0x23.append("productVol",_0x22('prodVol'));
-      _0x23.append("productKcal",_0x22('prodKcal'));
-      _0x23.append("quantity",_0x21('bagCount'));
-      _0x23.append("addamel",_0x21('addamel'));
-      _0x23.append("vitType",currentVitType);
-      _0x23.append("vitVol",_0x21('vitVol'));
-      _0x23.append("bco",_0x21('bco'));
-      _0x23.append("vitalipid",_0x21('vitalipid'));
-      _0x23.append("other1Name",_0x21('o1-name'));_0x23.append("other1Vol",_0x21('o1-vol'));
-      _0x23.append("other2Name",_0x21('o2-name'));_0x23.append("other2Vol",_0x21('o2-vol'));
-      _0x23.append("other3Name",_0x21('o3-name'));_0x23.append("other3Vol",_0x21('o3-vol'));
-      _0x23.append("other4Name",_0x21('o4-name'));_0x23.append("other4Vol",_0x21('o4-vol'));
-      _0x23.append("totalVol",_0x22('totalVolDisplay'));
-      _0x23.append("rate",_0x21('manualRate')||(parseFloat(_0x22('totalVolDisplay').replace(/,/g,''))/24).toFixed(1));
-      _0x23.append("recordedBy",sessionStorage.getItem('tpnUser'));
-      _0x17.disabled=true;_0x17.innerHTML="\u23f3 \u0e01\u0e33\u0e25\u0e31\u0e07\u0e12\u0e31\u0e19\u0e11\u0e36\u0e01...";
-      try {
-        await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',body:_0x23});
-        window.open("label.html?"+_0x23.toString(),"_blank");
-        alert("\u2705 \u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e40\u0e23\u0e35\u0e22\u0e1a\u0e23\u0e49\u0e2d\u0e22\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e32!");
-        location.reload();
-      } catch(_0x24){alert("\u274c \u0e40\u0e01\u0e34\u0e14\u0e02\u0e42\u0e2d\u0e1e\u0e25\u0e32\u0e14: "+_0x24.message);_0x17.disabled=false;_0x17.innerHTML="\ud83d\udcbe \u0e1a\u0e31\u0e19\u0e17\u0e36\u0e01\u0e41\u0e25\u0e30\u0e1e\u0e34\u0e21\u0e1e\u0e4c\u0e09\u0e25\u0e32\u0e01";}
-    }
-
-    /* --- Functions ที่คงเดิมเพื่อความเสถียร --- */
     function showMainApp() {
       document.getElementById('loginPage').classList.add('hidden');
       document.getElementById('mainApp').classList.remove('hidden');
       document.getElementById('displayUserName').textContent = sessionStorage.getItem('tpnUser');
       document.getElementById('orderDate').valueAsDate = new Date();
-      document.querySelectorAll('input[name="route"]').forEach(r => { r.addEventListener('change', filterProductsByRoute); });
-      filterProductsByRoute(); calculateAll();
+      document.querySelectorAll('input[name="route"]').forEach(radio => {
+        radio.addEventListener('change', filterProductsByRoute);
+      });
+      filterProductsByRoute();
+      calculateAll();
     }
+
     function logout() { sessionStorage.clear(); location.reload(); }
-    function changeBag(v) {
-      const d = document.getElementById('bagCountDisplay'), h = document.getElementById('bagCount');
-      let n = parseInt(h.value) + v; if(n<1) n=1; h.value=n; d.textContent=n;
+
+    function changeBag(val) {
+      const display = document.getElementById('bagCountDisplay');
+      const hiddenInput = document.getElementById('bagCount');
+      let current = parseInt(hiddenInput.value);
+      let newValue = current + val;
+      if (newValue < 1) newValue = 1;
+      hiddenInput.value = newValue;
+      display.textContent = newValue;
     }
-    const wards = ["2\u0e01","2\u0e02","2\u0e04","2\u0e07","2\u0e08","2\u0e0d","3\u0e01","3\u0e02","3\u0e04","3\u0e07","3\u0e08","3\u0e0d","4\u0e01","4\u0e02","4\u0e04","4\u0e07","4\u0e08","4\u0e0d","5\u0e01","5\u0e02","5\u0e04","5\u0e07","5\u0e08","5\u0e0d","6\u0e01","6\u0e02","6\u0e04","6\u0e07","6\u0e08","6\u0e0d","8A (ACRO)","AE1","AE2","AE3","AE4","Burn Unit","CCU","CVT ICU","LR","MICU 1","MICU 2","MICU 3","NSICU","NICU","PICU","PICU \u0e28\u0e2a\u0e01.","SCTU","SICU 1","SICU 2","SICU 3","SICU \u0e28\u0e2a\u0e01.","IMC 2\u0e07","IMC 3\u0e02","IMC 3\u0e08","IMC 4\u0e01","IMC 4\u0e02","IMC 4\u0e04","\u0e01\u0e27.6/1","\u0e01\u0e27.6/2","\u0e01\u0e27.7/1","\u0e01\u0e27.7/2","\u0e2a\u0e27.1/8B","\u0e2a\u0e27.1/8C","\u0e2a\u0e27.1/9A","\u0e2a\u0e27.1/9B","\u0e2a\u0e27.1/9C","\u0e2a\u0e27.1/11","\u0e2a\u0e27.1/12","\u0e2a\u0e27.1/13","\u0e2a\u0e27.1/14","\u0e2a\u0e27.1/15","\u0e08\u0e34\u0e15\u0e40\u0e27\u0e0a","\u0e2a\u0e07\u0e06\u0e4c\u0e2d\u0e32\u0e1e\u0e32\u0e18","Nursing home","HOME PN"];
+
+    const wards = [
+      "2ก", "2ข", "2ค", "2ง", "2จ", "2ฉ",
+      "3ก", "3ข", "3ค", "3ง", "3จ", "3ฉ",
+      "4ก", "4ข", "4ค", "4ง","4จ", "4ฉ",
+      "5ก", "5ข", "5ค", "5ง", "5จ", "5ฉ",
+      "6ก", "6ข", "6ค", "6ง", "6จ", "6ฉ",
+      "8A (ACRO)", "AE1", "AE2", "AE3", "AE4", "Burn Unit",
+      "CCU", "CVT ICU", "LR",
+      "MICU 1", "MICU 2", "MICU 3", "NSICU", "NICU", "PICU", "PICU ศสก.", "SCTU",
+      "SICU 1", "SICU 2", "SICU 3", "SICU ศสก.",
+      "IMC 2ง", "IMC 3ข", "IMC 3จ", "IMC 4ก", "IMC 4ข", "IMC 4ค",
+      "กว.6/1", "กว.6/2", "กว.7/1", "กว.7/2",
+      "สว.1/8B", "สว.1/8C", "สว.1/9A", "สว.1/9B", "สว.1/9C",
+      "สว.1/11", "สว.1/12", "สว.1/13", "สว.1/14", "สว.1/15",
+      "จิตเวช", "สงฆ์อาพาธ", "Nursing home", "HOME PN"
+    ];
+
     function showWards() { document.getElementById('wardList').classList.remove('hidden'); renderWards(wards); }
-    function renderWards(i) { document.getElementById('wardList').innerHTML = i.map(w => `<div class="p-4 hover:bg-emerald-50 cursor-pointer border-b font-black text-gray-700 text-center" onclick="selectWard('${w}')">${w}</div>`).join(''); }
-    function filterWards() { const v = document.getElementById('wardInput').value.toLowerCase(); renderWards(wards.filter(w => w.toLowerCase().includes(v))); }
+    function renderWards(items) { document.getElementById('wardList').innerHTML = items.map(w => `<div class="p-4 hover:bg-emerald-50 cursor-pointer border-b font-black text-gray-700 text-center" onclick="selectWard('${w}')">${w}</div>`).join(''); }
+    function filterWards() { const val = document.getElementById('wardInput').value.toLowerCase(); renderWards(wards.filter(w => w.toLowerCase().includes(val))); }
     function selectWard(w) { document.getElementById('wardInput').value = w; document.getElementById('wardList').classList.add('hidden'); }
     
     let cachedLatestOrder = null;
     async function fetchLatestOrder() {
-      const h = document.getElementById('hn').value.trim();
-      const b = document.getElementById('reorderBtn'), s = document.getElementById('hn-status');
-      if(!h){s.innerText="";return;}
-      s.innerText="\u23f3 \u0e01\u0e33\u0e25\u0e31\u0e07\u0e04\u0e49\u0e19\u0e2b\u0e32\u0e02\u0e42\u0e2d\u0e21\u0e39\u0e25..."; s.className="text-[10px] font-bold mt-1 ml-1 text-blue-500"; b.classList.add('hidden');
+      const hn = document.getElementById('hn').value.trim();
+      const btn = document.getElementById('reorderBtn');
+      const status = document.getElementById('hn-status');
+      if (!hn) { status.innerText = ""; return; }
+      status.innerText = "⏳ กำลังค้นหาข้อมูล...";
+      status.className = "text-[10px] font-bold mt-1 ml-1 text-blue-500";
+      btn.classList.add('hidden');
       try {
-        const r = await fetch(`${SCRIPT_URL}?action=getLatestOrder&hn=${h}`);
-        const d = await r.json();
-        if(d){ cachedLatestOrder=d; document.getElementById('patientName').value=d.patientName||""; if(d.ward)document.getElementById('wardInput').value=d.ward; s.innerText="\u2705 \u0e1e\u0e1a\u0e02\u0e42\u0e2d\u0e1e\u0e25\u0e32\u0e14\u0e40\u0e14\u0e34\u0e21"; s.className="text-[10px] font-bold mt-1 ml-1 text-emerald-600"; b.classList.remove('hidden'); }
-        else { cachedLatestOrder=null; s.innerText="\ud83d\udd31 \u0e04\u0e19\u0e44\u0e02\u0e49\u0e23\u0e32\u0e22\u0e43\u0e2b\u0e21\u0e48"; s.className="text-[10px] font-bold mt-1 ml-1 text-orange-500"; b.classList.add('hidden'); }
-      } catch(e) { s.innerText="\u274c \u0e40\u0e01\u0e34\u0e14\u0e02\u0e42\u0e2d\u0e1e\u0e25\u0e32\u0e14\u0e43\u0e19\u0e01\u0e32\u0e23\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d"; s.className="text-[10px] font-bold mt-1 ml-1 text-red-500"; }
+        const response = await fetch(`${SCRIPT_URL}?action=getLatestOrder&hn=${hn}`);
+        const data = await response.json();
+        if (data) {
+          cachedLatestOrder = data;
+          document.getElementById('patientName').value = data.patientName || "";
+          if (data.ward) document.getElementById('wardInput').value = data.ward;
+          status.innerText = "✅ พบข้อมูลเดิม";
+          status.className = "text-[10px] font-bold mt-1 ml-1 text-emerald-600";
+          btn.classList.remove('hidden');
+        } else {
+          cachedLatestOrder = null;
+          status.innerText = "🔹 คนไข้รายใหม่";
+          status.className = "text-[10px] font-bold mt-1 ml-1 text-orange-500";
+          btn.classList.add('hidden');
+        }
+      } catch (e) {
+        status.innerText = "❌ เกิดข้อผิดพลาดในการเชื่อมต่อ";
+        status.className = "text-[10px] font-bold mt-1 ml-1 text-red-500";
+        btn.classList.add('hidden');
+      }
     }
 
     function applyLatestOrder() {
-      if(!cachedLatestOrder) return; const o=cachedLatestOrder;
-      document.getElementById('bw').value=o.bw||"";
-      if(o.route==="Central Line")document.getElementById('route-central').checked=true;
-      else if(o.route==="Peripheral Line")document.getElementById('route-peripheral').checked=true;
-      const ps=document.getElementById('productSelect');
-      for(let i=0;i<ps.options.length;i++){if(ps.options[i].text===o.productName){ps.selectedIndex=i;break;}}
-      updateProductDetails(); document.getElementById('addamel').value=o.addamel||0; document.getElementById('bco').value=o.bco||0; document.getElementById('vitalipid').value=o.vitalipid||0;
-      if(o.vitType){selectVitamin(o.vitType);document.getElementById('vitVol').value=o.vitVol||0;}
-      ['o1','o2','o3','o4'].forEach((id,idx)=>{ document.getElementById(id+'-name').value=o['other'+(idx+1)+'Name']||""; document.getElementById(id+'-vol').value=o['other'+(idx+1)+'Vol']||""; });
-      document.getElementById('manualRate').value=o.rate||""; calculateAll(); alert("\u2705 \u0e14\u0e36\u0e07\u0e02\u0e42\u0e2d\u0e1e\u0e25\u0e32\u0e14\u0e2a\u0e33\u0e40\u0e23\u0e47\u0e08!");
+      if (!cachedLatestOrder) return;
+      const o = cachedLatestOrder;
+      document.getElementById('bw').value = o.bw || "";
+      if (o.route === "Central Line") document.getElementById('route-central').checked = true;
+      else if (o.route === "Peripheral Line") document.getElementById('route-peripheral').checked = true;
+      const productSelect = document.getElementById('productSelect');
+      for (let i = 0; i < productSelect.options.length; i++) {
+        if (productSelect.options[i].text === o.productName) { productSelect.selectedIndex = i; break; }
+      }
+      updateProductDetails();
+      document.getElementById('addamel').value = o.addamel || 0;
+      document.getElementById('bco').value = o.bco || 0;
+      document.getElementById('vitalipid').value = o.vitalipid || 0;
+      if (o.vitType) { selectVitamin(o.vitType); document.getElementById('vitVol').value = o.vitVol || 0; }
+      document.getElementById('o1-name').value = o.other1Name || "";
+      document.getElementById('o1-vol').value = o.other1Vol || "";
+      document.getElementById('o2-name').value = o.other2Name || "";
+      document.getElementById('o2-vol').value = o.other2Vol || "";
+      document.getElementById('o3-name').value = o.other3Name || "";
+      document.getElementById('o3-vol').value = o.other3Vol || "";
+      document.getElementById('o4-name').value = o.other4Name || "";
+      document.getElementById('o4-vol').value = o.other4Vol || "";
+      document.getElementById('manualRate').value = o.rate || "";
+      calculateAll();
+      alert("✅ ดึงข้อมูลสำเร็จ! ตรวจสอบความถูกต้องก่อนบันทึกนะคะ");
     }
 
     let currentVitType = '';
-    function selectVitamin(t) {
-      const v=document.getElementById('vitVol'),l=document.getElementById('vitalipid'),h=document.getElementById('vit-hint'),ps=document.getElementById('productSelect');
-      currentVitType=t;
-      document.getElementById('btn-cernevit').className="flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-white text-gray-400";
-      document.getElementById('btn-soluvit').className="flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-white text-gray-400";
-      if(t==='cernevit'){
-        document.getElementById('btn-cernevit').className="flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-emerald-600 text-white shadow-md";
-        v.value=5; h.innerHTML="\u26a0\ufe0f MAX CERNEVIT = 5 ML"; l.value=0; l.readOnly=true; l.classList.add('opacity-30','bg-gray-200');
+    function selectVitamin(type) {
+      const vitVol = document.getElementById('vitVol');
+      const vitalipid = document.getElementById('vitalipid');
+      const vitHint = document.getElementById('vit-hint');
+      const productSelect = document.getElementById('productSelect');
+      currentVitType = type;
+      document.getElementById('btn-cernevit').className = "flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-white text-gray-400";
+      document.getElementById('btn-soluvit').className = "flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-white text-gray-400";
+      if (type === 'cernevit') {
+        document.getElementById('btn-cernevit').className = "flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-emerald-600 text-white shadow-md";
+        vitVol.value = 5;
+        vitHint.innerHTML = "⚠️ MAX CERNEVIT = 5 ML";
+        vitalipid.value = 0;
+        vitalipid.readOnly = true;
+        vitalipid.classList.add('opacity-30', 'bg-gray-200');
       } else {
-        document.getElementById('btn-soluvit').className="flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-yellow-400 text-black shadow-md";
-        v.value=10; h.innerHTML="\u26a0\ufe0f MAX SOLUVIT-N = 10 ML";
-        if(ps.value==="bfluid"){l.value=0;l.readOnly=true;l.classList.add('opacity-30','bg-red-50');}
-        else {l.value=10;l.readOnly=false;l.classList.remove('opacity-30','bg-gray-200','bg-red-50');}
+        document.getElementById('btn-soluvit').className = "flex-1 py-4 rounded-xl border-2 font-black text-xs uppercase bg-yellow-400 text-black shadow-md";
+        vitVol.value = 10;
+        vitHint.innerHTML = "⚠️ MAX SOLUVIT-N = 10 ML";
+        if (productSelect.value === "bfluid") {
+          vitalipid.value = 0;
+          vitalipid.readOnly = true;
+          vitalipid.classList.add('opacity-30', 'bg-red-50');
+        } else {
+          vitalipid.value = 10;
+          vitalipid.readOnly = false;
+          vitalipid.classList.remove('opacity-30', 'bg-gray-200', 'bg-red-50');
+        }
       }
       calculateAll();
     }
 
-    function checkBcoLimit(){ const b=document.getElementById('bco'); if(parseFloat(b.value)>2)b.classList.add('text-red-700','bg-red-50'); else b.classList.remove('text-red-700','bg-red-50'); calculateAll(); }
-    function filterProductsByRoute(){ const p=document.getElementById('route-peripheral').checked,s=document.getElementById('productSelect'); s.value=""; updateProductDetails(); for(let i=1;i<s.options.length;i++){ const o=s.options[i]; o.style.display=p?(o.classList.contains('route-p')?"block":"none"):"block"; } }
-    function updateProductDetails(){ const s=document.getElementById('productSelect'),o=s.options[s.selectedIndex],v=document.getElementById('vitalipid'); document.getElementById('prodVol').textContent=o.getAttribute('data-vol')||0; document.getElementById('prodKcal').textContent=o.getAttribute('data-kcal')||0; if(s.value==="bfluid"){v.value=0;v.readOnly=true;v.style.backgroundColor="#fee2e2";v.style.border="2px solid #ef4444";}else{if(currentVitType!=='cernevit'){v.readOnly=false;v.style.backgroundColor="";v.style.border="";}} calculateAll(); }
+    function checkBcoLimit() {
+      const bco = document.getElementById('bco');
+      if (parseFloat(bco.value) > 2) bco.classList.add('text-red-700', 'bg-red-50');
+      else bco.classList.remove('text-red-700', 'bg-red-50');
+      calculateAll();
+    }
+
+    function filterProductsByRoute() {
+      const isPeripheral = document.getElementById('route-peripheral').checked;
+      const select = document.getElementById('productSelect');
+      select.value = "";
+      updateProductDetails();
+      for (let i = 1; i < select.options.length; i++) {
+        const opt = select.options[i];
+        opt.style.display = isPeripheral ? (opt.classList.contains('route-p') ? "block" : "none") : "block";
+      }
+    }
+
+    function updateProductDetails() {
+      const s = document.getElementById('productSelect');
+      const o = s.options[s.selectedIndex];
+      const vitalipidInput = document.getElementById('vitalipid');
+      document.getElementById('prodVol').textContent = o.getAttribute('data-vol') || 0;
+      document.getElementById('prodKcal').textContent = o.getAttribute('data-kcal') || 0;
+      if (s.value === "bfluid") {
+        vitalipidInput.value = 0;
+        vitalipidInput.readOnly = true;
+        vitalipidInput.style.backgroundColor = "#fee2e2";
+        vitalipidInput.style.border = "2px solid #ef4444";
+      } else {
+        if (currentVitType !== 'cernevit') {
+          vitalipidInput.readOnly = false;
+          vitalipidInput.style.backgroundColor = "";
+          vitalipidInput.style.border = "";
+        }
+      }
+      calculateAll();
+    }
+
+    function calculateAll() {
+      const v = (id) => parseFloat(document.getElementById(id).value) || 0;
+      const prodVol = parseFloat(document.getElementById('prodVol').textContent) || 0;
+      const vitVol = v('vitVol');
+      const vitMaxMsg = document.getElementById('vit-max-msg');
+      if ((currentVitType === 'cernevit' && vitVol > 5) || (currentVitType === 'soluvit' && vitVol > 10)) vitMaxMsg.classList.remove('invisible');
+      else vitMaxMsg.classList.add('invisible');
+      let otherTotal = 0;
+      document.querySelectorAll('.other-vol').forEach(input => { otherTotal += parseFloat(input.value) || 0; });
+      const grandTotal = prodVol + v('addamel') + vitVol + v('bco') + v('vitalipid') + otherTotal;
+      document.getElementById('totalVolDisplay').textContent = grandTotal.toLocaleString();
+      const rh = document.getElementById('rateHint');
+      if (grandTotal > 0) { rh.textContent = `✅ แนะนำ: ${(grandTotal / 24).toFixed(1)} ml/hr`; rh.style.color = "#bef264"; }
+      else { rh.textContent = `👉 กรุณาเลือก Product...`; rh.style.color = "#facc15"; }
+    }
+
+    async function saveOrder() {
+      const saveBtn = document.getElementById('saveBtn');
+      const hn = document.getElementById('hn').value;
+      const pName = document.getElementById('patientName').value;
+      if (!hn || !pName) { alert("⚠️ กรุณาระบุ HN และชื่อคนไข้ค่ะ"); return; }
+      const productSelect = document.getElementById('productSelect');
+      if (productSelect.value === "") { alert("⚠️ กรุณาเลือกผลิตภัณฑ์ค่ะ"); return; }
+      const v = (id) => document.getElementById(id).value;
+      const t = (id) => document.getElementById(id).textContent;
+      const formData = new URLSearchParams();
+      formData.append("action", "saveOrder");
+      formData.append("orderDate", v('orderDate'));
+      formData.append("hn", hn);
+      formData.append("patientName", pName);
+      formData.append("ward", v('wardInput'));
+      formData.append("route", document.querySelector('input[name="route"]:checked').value);
+      formData.append("bw", v('bw'));
+      formData.append("productName", productSelect.options[productSelect.selectedIndex].text);
+      formData.append("productVol", t('prodVol'));
+      formData.append("productKcal", t('prodKcal'));
+      formData.append("quantity", v('bagCount'));
+      formData.append("addamel", v('addamel'));
+      formData.append("vitType", currentVitType);
+      formData.append("vitVol", v('vitVol'));
+      formData.append("bco", v('bco'));
+      formData.append("vitalipid", v('vitalipid'));
+      formData.append("other1Name", v('o1-name'));
+      formData.append("other1Vol", v('o1-vol'));
+      formData.append("other2Name", v('o2-name'));
+      formData.append("other2Vol", v('o2-vol'));
+      formData.append("other3Name", v('o3-name'));
+      formData.append("other3Vol", v('o3-vol'));
+      formData.append("other4Name", v('o4-name'));
+      formData.append("other4Vol", v('o4-vol'));
+      formData.append("totalVol", t('totalVolDisplay'));
+      formData.append("rate", v('manualRate') || (parseFloat(t('totalVolDisplay').replace(/,/g, '')) / 24).toFixed(1));
+      formData.append("recordedBy", sessionStorage.getItem('tpnUser'));
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = "⏳ กำลังบันทึก...";
+      try {
+        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData });
+        const queryString = formData.toString();
+        window.open("label.html?" + queryString, "_blank");
+        alert("✅ บันทึกข้อมูลเรียบร้อยแล้วค่ะ!");
+        location.reload();
+      } catch (e) {
+        alert("❌ เกิดข้อผิดพลาด: " + e.message);
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = "💾 บันทึกและพิมพ์ฉลาก";
+      }
+    }
 
     window.onload = () => { if (sessionStorage.getItem('tpnUser')) showMainApp(); };
   </script>
 </body>
 </html>
+
