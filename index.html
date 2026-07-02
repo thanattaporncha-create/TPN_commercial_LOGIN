@@ -116,24 +116,32 @@
       <section class="bg-white p-6 rounded-2xl card-shadow space-y-4 border-t-8 border-emerald-600">
         <h2 class="section-title">📦 เลือกผลิตภัณฑ์และจำนวน</h2>
         <select id="productSelect" class="w-full p-4 border-2 border-emerald-100 rounded-xl bg-emerald-50 text-xl font-black text-emerald-900 outline-none text-center" onchange="updateProductDetails()">
-  <option value="">-- คลิกเลือกสารอาหาร --</option>
-  <option value="smof_p_1904" class="route-p" data-vol="1904" data-kcal="1300">SMOF kabiven (P-line) 1,904 ml / 1300 kcal</option>
-  <option value="oli_n4" class="route-p" data-vol="1500" data-kcal="910">Oliclinomel N/4 (P-line) 1,500 ml / 910 kcal</option>
-  <option value="nutri_p" class="route-p" data-vol="1875" data-kcal="1435">Nutriflex lipid peri 1,875 ml / 1435 kcal</option>
-  <option value="bfluid" class="route-p" data-vol="1000" data-kcal="420">B-Fluid 1,000 ml / 420 kcal</option>
-  <option value="smof_c_1477" data-vol="1477" data-kcal="1600">SMOF kabiven (C-line) 1,477 ml / 1600 kcal</option>
-  <option value="smof_c_986" data-vol="986" data-kcal="1100">SMOF kabiven (C-line) 986 ml / 1100 kcal</option>
-  <option value="oli_n7" data-vol="1500" data-kcal="1800">Oliclinomel N/7 (C-line) 1,500 ml / 1800 kcal</option>
-  <option value="nutri_vr" data-vol="1250" data-kcal="1475">Nutriflex lipid VR 1,250 ml / 1475 kcal</option>
-  
-  <option value="amiparen_10" class="route-p" data-vol="500" data-kcal="200">10% Amiparen 500 ml / 200 kcal</option>
-  <option value="aminoplasmal_15" data-vol="500" data-kcal="300">15% Aminoplasmal 500 ml / 300 kcal</option>
-  <option value="smoflipid_20" class="route-p" data-vol="250" data-kcal="500">20% SMOF lipid 250 ml / 500 kcal</option>
-  <option value="clinoleic_20" class="route-p" data-vol="250" data-kcal="500">20% Clinoleic 250 ml / 500 kcal</option>
-  <option value="intralipid_20" class="route-p" data-vol="250" data-kcal="500">20% IntraLipid 250 ml / 500 kcal</option>
-</select>
+          <option value="">-- คลิกเลือกสารอาหาร --</option>
+          <option value="smof_p_1904" class="route-p" data-vol="1904" data-kcal="1300">SMOF kabiven (P-line) 1,904 ml / 1300 kcal</option>
+          <option value="oli_n4" class="route-p" data-vol="1500" data-kcal="910">Oliclinomel N/4 (P-line) 1,500 ml / 910 kcal</option>
+          <option value="nutri_p" class="route-p" data-vol="1875" data-kcal="1435">Nutriflex lipid peri 1,875 ml / 1435 kcal</option>
+          <option value="bfluid" class="route-p" data-vol="1000" data-kcal="420">B-Fluid 1,000 ml / 420 kcal</option>
+          <option value="smof_c_1477" data-vol="1477" data-kcal="1600">SMOF kabiven (C-line) 1,477 ml / 1600 kcal</option>
+          <option value="smof_c_986" data-vol="986" data-kcal="1100">SMOF kabiven (C-line) 986 ml / 1100 kcal</option>
+          <option value="oli_n7" data-vol="1500" data-kcal="1800">Oliclinomel N/7 (C-line) 1,500 ml / 1800 kcal</option>
+          <option value="nutri_vr" data-vol="1250" data-kcal="1475">Nutriflex lipid VR 1,250 ml / 1475 kcal</option>
+          
+          <option value="amiparen_10" class="route-p custom-vol" data-vol="500" data-kcal="200">10% Amiparen 500 ml / 200 kcal</option>
+          <option value="aminoplasmal_15" class="custom-vol" data-vol="500" data-kcal="300">15% Aminoplasmal 500 ml / 300 kcal</option>
+          <option value="smoflipid_20" class="route-p custom-vol" data-vol="250" data-kcal="500">20% SMOF lipid 250 ml / 500 kcal</option>
+          <option value="clinoleic_20" class="route-p custom-vol" data-vol="250" data-kcal="500">20% Clinoleic 250 ml / 500 kcal</option>
+          <option value="intralipid_20" class="route-p custom-vol" data-vol="250" data-kcal="500">20% IntraLipid 250 ml / 500 kcal</option>
+        </select>
 
-        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center">
+        <div id="customVolContainer" class="hidden p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100/80 space-y-2">
+          <label class="block text-sm font-bold text-emerald-800 text-center">💡 เคสนี้ต้องการปรับปริมาตรผลิตภัณฑ์ (Volume) เฉพาะเจาะจง:</label>
+          <div class="relative max-w-xs mx-auto">
+            <input type="number" id="customProductVol" placeholder="ระบุ Volume ที่ต้องการ" class="w-full p-3 border-2 border-emerald-400 rounded-xl text-center font-black text-emerald-700 text-2xl outline-none" oninput="handleCustomVolInput()">
+            <span class="absolute right-4 top-4 text-emerald-400 font-bold">ml</span>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 p-4 rounded-2xl border border border-emerald-100 text-center">
           <label class="block text-xs font-black text-emerald-600 uppercase mb-2 tracking-widest">จำนวนถุงที่เบิก (Stock Out)</label>
           <div class="flex items-center justify-center gap-6">
             <button onclick="changeBag(-1)" class="w-12 h-12 bg-white rounded-full shadow-md text-2xl font-black text-emerald-600 active:scale-90">-</button>
@@ -144,11 +152,11 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <div class="p-4 bg-emerald-50 rounded-2xl text-center border border-emerald-100">
+          <div class="p-4 bg-emerald-50 rounded-2xl text-center border border border-emerald-100">
             <span class="text-xs font-black text-emerald-600 uppercase">Volume:</span>
             <div class="text-2xl font-black text-emerald-900"><span id="prodVol">0</span> ml</div>
           </div>
-          <div class="p-4 bg-yellow-50 rounded-2xl text-center border border-yellow-100">
+          <div class="p-4 bg-yellow-50 rounded-2xl text-center border border border-yellow-100">
             <span class="text-xs font-black text-yellow-600 uppercase">Energy:</span>
             <div class="text-2xl font-black text-yellow-900"><span id="prodKcal">0</span> kcal</div>
           </div>
@@ -215,10 +223,6 @@
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOMQbFS49PJxi4y7ejkFDTsYMIEk3u-j0rEiGF30fB6HfG_VK7WcvFGgYLlfjhPu2_PA/exec";
 
-    // =========================================
-    // ✅ LOGIN ใหม่: ส่งไปเช็คที่ Apps Script
-    // ❌ ไม่มี userMap ใน HTML อีกต่อไป!
-    // =========================================
     async function handleLogin(e) {
       if (e) e.preventDefault();
       
@@ -233,7 +237,6 @@
         return;
       }
 
-      // แสดง Loading
       btn.disabled = true;
       btn.innerHTML = "⏳ กำลังตรวจสอบ...";
       errMsg.classList.add('hidden');
@@ -252,11 +255,9 @@
         const result = await response.json();
 
         if (result.success) {
-          // ✅ Login สำเร็จ
           sessionStorage.setItem('tpnUser', result.name);
           showMainApp();
         } else {
-          // ❌ รหัสผิด
           errMsg.textContent = "❌ รหัสผิดพลาด กรุณาตรวจสอบอีกครั้งค่ะ";
           errMsg.classList.remove('hidden');
           btn.disabled = false;
@@ -359,6 +360,12 @@
         if (productSelect.options[i].text === o.productName) { productSelect.selectedIndex = i; break; }
       }
       updateProductDetails();
+      
+      // ถ้าข้อมูลเดิมระบุค่าตัวเลขมา ให้ใส่ในช่อง Custom ด้วยหากเป็นกลุ่มเลือกกรอกปริมาตรได้
+      if(productSelect.options[productSelect.selectedIndex].classList.contains('custom-vol')) {
+        document.getElementById('customProductVol').value = o.productVol || "";
+      }
+
       document.getElementById('addamel').value = o.addamel || 0;
       document.getElementById('bco').value = o.bco || 0;
       document.getElementById('vitalipid').value = o.vitalipid || 0;
@@ -431,8 +438,35 @@
       const s = document.getElementById('productSelect');
       const o = s.options[s.selectedIndex];
       const vitalipidInput = document.getElementById('vitalipid');
-      document.getElementById('prodVol').textContent = o.getAttribute('data-vol') || 0;
-      document.getElementById('prodKcal').textContent = o.getAttribute('data-kcal') || 0;
+      const customVolContainer = document.getElementById('customVolContainer');
+      const customProductVol = document.getElementById('customProductVol');
+
+      if (!s.value) {
+        document.getElementById('prodVol').textContent = 0;
+        document.getElementById('prodKcal').textContent = 0;
+        customVolContainer.classList.add('hidden');
+        customProductVol.value = "";
+        calculateAll();
+        return;
+      }
+
+      // ตรวจสอบว่าเป็นกลุ่มสารอาหารที่เปิดให้กรอกปริมาตรเองได้หรือไม่
+      if (o.classList.contains('custom-vol')) {
+        customVolContainer.classList.remove('hidden');
+        // ถ้าไม่มีค่ากรอกไว้ก่อนหน้า ให้ดึง Default ของถุงขึ้นมาแสดงก่อน
+        if (!customProductVol.value) {
+          customProductVol.value = o.getAttribute('data-vol');
+        }
+        // สั่งคำนวณแคลอรีและปริมาตรใหม่ตามกล่องข้อความ
+        handleCustomVolInput();
+      } else {
+        // ผลิตภัณฑ์แบบ Standard
+        customVolContainer.classList.add('hidden');
+        customProductVol.value = "";
+        document.getElementById('prodVol').textContent = o.getAttribute('data-vol') || 0;
+        document.getElementById('prodKcal').textContent = o.getAttribute('data-kcal') || 0;
+      }
+
       if (s.value === "bfluid") {
         vitalipidInput.value = 0;
         vitalipidInput.readOnly = true;
@@ -445,6 +479,31 @@
           vitalipidInput.style.border = "";
         }
       }
+      calculateAll();
+    }
+
+    // ฟังก์ชันคำนวณแคลอรีอัตโนมัติเมื่อผู้ใช้พิมพ์แก้ไขปริมาตรเอง
+    function handleCustomVolInput() {
+      const s = document.getElementById('productSelect');
+      const o = s.options[s.selectedIndex];
+      const customProductVol = document.getElementById('customProductVol');
+      
+      let inputVol = parseFloat(customProductVol.value) || 0;
+      let calculatedKcal = 0;
+
+      // จัดการคำนวณสัดส่วน Kcal ตามปริมาตรจริงที่กรอก
+      if (s.value === "aminoplasmal_15") {
+        calculatedKcal = inputVol * 0.6; // 15% Aminoplasmal คิดพลังงานที่ 0.6 kcal/ml
+      } else if (s.value === "amiparen_10") {
+        calculatedKcal = inputVol * 0.4; // 10% Amiparen คิดพลังงานที่ 0.4 kcal/ml
+      } else if (s.value === "smoflipid_20" || s.value === "clinoleic_20" || s.value === "intralipid_20") {
+        calculatedKcal = inputVol * 2.0; // กลุ่ม Lipid 20% คิดพลังงานที่ 2.0 kcal/ml
+      }
+
+      // แสดงค่าผลลัพธ์ลงใน UI
+      document.getElementById('prodVol').textContent = inputVol;
+      document.getElementById('prodKcal').textContent = Math.round(calculatedKcal);
+      
       calculateAll();
     }
 
@@ -520,4 +579,3 @@
   </script>
 </body>
 </html>
-
