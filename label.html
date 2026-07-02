@@ -78,11 +78,11 @@
   <div id="bag-area" class="print-area"></div>
 
   <script>
-    // ยามเฝ้าประตู: เช็คว่า Login หรือยัง?
-  if (!sessionStorage.getItem('tpnUser')) {
-    alert("⚠️ กรุณาเข้าสู่ระบบก่อนใช้งานนะคะ");
-    window.location.href = "index.html"; // ดีดกลับหน้าแรก
-  }
+    if (!sessionStorage.getItem('tpnUser')) {
+      alert("⚠️ กรุณาเข้าสู่ระบบก่อนใช้งานนะคะ");
+      window.location.href = "index.html";
+    }
+
     function formatThaiDate(dateStr) {
       if (!dateStr) return "-";
       const d = new Date(dateStr);
@@ -97,8 +97,21 @@
       document.getElementById(`card-${type}`).style.borderColor = '#10b981'; 
     }
 
+    // 🛠️ ปรับฟังก์ชันตัดข้อความห้อยท้ายสำหรับกลุ่มสารอาหารเดี่ยวที่กรอก Volume เองได้
     function splitProductName(name) {
       if (!name) return "";
+      
+      // รายชื่อสินค้าที่ถ้าพบลักษณะข้อความชุดนี้ ให้ตัดเลข "xxx ml / yyy kcal" ออกไปทั้งหมดเลยเพื่อไม่ให้วอร์ดสับสน
+      const customKeywords = ["Amiparen", "Aminoplasmal", "SMOF lipid", "Clinoleic", "IntraLipid"];
+      const isCustomProduct = customKeywords.some(keyword => name.toLowerCase().includes(keyword.toLowerCase()));
+
+      if (isCustomProduct && name.includes(' ml / ')) {
+        // หาตำแหน่งชุดตัวเลขด้านหลังแล้วตัดทิ้ง เอาเฉพาะชื่อผลิตภัณฑ์ข้างหน้าอย่างเดียว
+        const cleanName = name.split(/\d{1,3}(,\d{3})*\s*ml\s*\/\s*\d+\s*kcal/i)[0].trim();
+        return `<span>${cleanName}</span>`;
+      }
+      
+      // สำหรับสินค้าสำเร็จรูปสูตรมาตรฐานตัวอื่นๆ (เช่น SMOF kabiven, Oliclinomel) ให้ขึ้นบรรทัดใหม่เหมือนเดิม
       if (name.includes(' ml / ')) {
         const match = name.match(/(\d{1,3}(,\d{3})* ml \/ \d+ kcal)/);
         if (match) {
@@ -215,5 +228,3 @@
   </script>
 </body>
 </html>
-
-
