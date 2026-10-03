@@ -141,7 +141,7 @@
           </div>
         </div>
 
-        <div class="bg-emerald-50 p-4 rounded-2xl border border border-emerald-100 text-center">
+        <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center">
           <label class="block text-xs font-black text-emerald-600 uppercase mb-2 tracking-widest">จำนวนถุงที่เบิก (Stock Out)</label>
           <div class="flex items-center justify-center gap-6">
             <button onclick="changeBag(-1)" class="w-12 h-12 bg-white rounded-full shadow-md text-2xl font-black text-emerald-600 active:scale-90">-</button>
@@ -152,11 +152,11 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          <div class="p-4 bg-emerald-50 rounded-2xl text-center border border border-emerald-100">
+          <div class="p-4 bg-emerald-50 rounded-2xl text-center border border-emerald-100">
             <span class="text-xs font-black text-emerald-600 uppercase">Volume:</span>
             <div class="text-2xl font-black text-emerald-900"><span id="prodVol">0</span> ml</div>
           </div>
-          <div class="p-4 bg-yellow-50 rounded-2xl text-center border border border-yellow-100">
+          <div class="p-4 bg-yellow-50 rounded-2xl text-center border border-yellow-100">
             <span class="text-xs font-black text-yellow-600 uppercase">Energy:</span>
             <div class="text-2xl font-black text-yellow-900"><span id="prodKcal">0</span> kcal</div>
           </div>
@@ -189,13 +189,101 @@
           </div>
         </div>
 
+        <!-- Section Add สารอื่นๆ ที่ปรับปรุงใหม่ -->
         <div class="space-y-4 pt-8 border-t border-emerald-50 text-left">
           <span class="text-xl font-black text-gray-800 italic block uppercase tracking-widest mb-4">Add สารอื่นๆ</span>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="other-additives">
-            <div class="flex gap-3"><input type="text" id="o1-name" placeholder="ชื่อสาร 1" class="flex-1 p-3 border border-gray-100 rounded-xl font-bold"><input type="number" id="o1-vol" placeholder="ml" class="w-24 p-3 border border-gray-100 rounded-xl text-center font-black text-emerald-700 other-vol" oninput="calculateAll()"></div>
-            <div class="flex gap-3"><input type="text" id="o2-name" placeholder="ชื่อสาร 2" class="flex-1 p-3 border border-gray-100 rounded-xl font-bold"><input type="number" id="o2-vol" placeholder="ml" class="w-24 p-3 border border-gray-100 rounded-xl text-center font-black text-emerald-700 other-vol" oninput="calculateAll()"></div>
-            <div class="flex gap-3"><input type="text" id="o3-name" placeholder="ชื่อสาร 3" class="flex-1 p-3 border border-gray-100 rounded-xl font-bold"><input type="number" id="o3-vol" placeholder="ml" class="w-24 p-3 border border-gray-100 rounded-xl text-center font-black text-emerald-700 other-vol" oninput="calculateAll()"></div>
-            <div class="flex gap-3"><input type="text" id="o4-name" placeholder="ชื่อสาร 4" class="flex-1 p-3 border border-gray-100 rounded-xl font-bold"><input type="number" id="o4-vol" placeholder="ml" class="w-24 p-3 border border-gray-100 rounded-xl text-center font-black text-emerald-700 other-vol" oninput="calculateAll()"></div>
+          <div class="grid grid-cols-1 gap-4" id="other-additives">
+            
+            <!-- สารช่องที่ 1 (Smart) -->
+            <div class="bg-gray-50 p-3 rounded-2xl border border-gray-100 space-y-2">
+              <div class="flex flex-col sm:flex-row gap-2">
+                <select id="o1-select" onchange="handleSmartAdditiveChange(1)" class="flex-1 p-2.5 border border-gray-200 rounded-xl font-bold bg-white outline-none">
+                  <option value="">-- เลือกสารอื่น ๆ (ช่อง 1) --</option>
+                  <option value="ri">RI (Actrapid®) 100u/ml</option>
+                  <option value="hydrocortisone">Hydrocortisone (50mg/ml)</option>
+                  <option value="nacl3">3% NaCl</option>
+                  <option value="kcl">KCl</option>
+                  <option value="glycophos">Glycophos</option>
+                  <option value="heparin">Heparin (Diluted)</option>
+                  <option value="peditrace">Peditrace</option>
+                </select>
+                <div id="o1-req-container" class="hidden flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl">
+                  <span class="text-xs font-bold text-gray-500">Req:</span>
+                  <input type="number" id="o1-req" step="any" placeholder="0" oninput="calculateSmartAdditive(1)" class="w-20 p-1 font-bold text-center outline-none">
+                  <span id="o1-unit" class="text-xs font-bold text-emerald-600">Unit</span>
+                </div>
+                <div class="flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl sm:w-32">
+                  <span class="text-xs font-bold text-gray-400">Vol:</span>
+                  <input type="number" id="o1-vol" step="any" placeholder="0" class="w-full p-1 text-center font-black text-emerald-700 other-vol outline-none" oninput="calculateAll()">
+                  <span class="text-xs font-bold text-gray-500">ml</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- สารช่องที่ 2 (Smart) -->
+            <div class="bg-gray-50 p-3 rounded-2xl border border-gray-100 space-y-2">
+              <div class="flex flex-col sm:flex-row gap-2">
+                <select id="o2-select" onchange="handleSmartAdditiveChange(2)" class="flex-1 p-2.5 border border-gray-200 rounded-xl font-bold bg-white outline-none">
+                  <option value="">-- เลือกสารอื่น ๆ (ช่อง 2) --</option>
+                  <option value="ri">RI (Actrapid®) 100u/ml</option>
+                  <option value="hydrocortisone">Hydrocortisone (50mg/ml)</option>
+                  <option value="nacl3">3% NaCl</option>
+                  <option value="kcl">KCl</option>
+                  <option value="glycophos">Glycophos</option>
+                  <option value="heparin">Heparin (Diluted)</option>
+                  <option value="peditrace">Peditrace</option>
+                </select>
+                <div id="o2-req-container" class="hidden flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl">
+                  <span class="text-xs font-bold text-gray-500">Req:</span>
+                  <input type="number" id="o2-req" step="any" placeholder="0" oninput="calculateSmartAdditive(2)" class="w-20 p-1 font-bold text-center outline-none">
+                  <span id="o2-unit" class="text-xs font-bold text-emerald-600">Unit</span>
+                </div>
+                <div class="flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl sm:w-32">
+                  <span class="text-xs font-bold text-gray-400">Vol:</span>
+                  <input type="number" id="o2-vol" step="any" placeholder="0" class="w-full p-1 text-center font-black text-emerald-700 other-vol outline-none" oninput="calculateAll()">
+                  <span class="text-xs font-bold text-gray-500">ml</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- สารช่องที่ 3 (Smart) -->
+            <div class="bg-gray-50 p-3 rounded-2xl border border-gray-100 space-y-2">
+              <div class="flex flex-col sm:flex-row gap-2">
+                <select id="o3-select" onchange="handleSmartAdditiveChange(3)" class="flex-1 p-2.5 border border-gray-200 rounded-xl font-bold bg-white outline-none">
+                  <option value="">-- เลือกสารอื่น ๆ (ช่อง 3) --</option>
+                  <option value="ri">RI (Actrapid®) 100u/ml</option>
+                  <option value="hydrocortisone">Hydrocortisone (50mg/ml)</option>
+                  <option value="nacl3">3% NaCl</option>
+                  <option value="kcl">KCl</option>
+                  <option value="glycophos">Glycophos</option>
+                  <option value="heparin">Heparin (Diluted)</option>
+                  <option value="peditrace">Peditrace</option>
+                </select>
+                <div id="o3-req-container" class="hidden flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl">
+                  <span class="text-xs font-bold text-gray-500">Req:</span>
+                  <input type="number" id="o3-req" step="any" placeholder="0" oninput="calculateSmartAdditive(3)" class="w-20 p-1 font-bold text-center outline-none">
+                  <span id="o3-unit" class="text-xs font-bold text-emerald-600">Unit</span>
+                </div>
+                <div class="flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl sm:w-32">
+                  <span class="text-xs font-bold text-gray-400">Vol:</span>
+                  <input type="number" id="o3-vol" step="any" placeholder="0" class="w-full p-1 text-center font-black text-emerald-700 other-vol outline-none" oninput="calculateAll()">
+                  <span class="text-xs font-bold text-gray-500">ml</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- สารช่องที่ 4 (Free Text สำหรับสารอื่นๆ/แปลกๆ) -->
+            <div class="bg-gray-50 p-3 rounded-2xl border border-gray-100">
+              <div class="flex gap-3">
+                <input type="text" id="o4-name" placeholder="ชื่อสาร 4 (ระบุเองอิสระ)" class="flex-1 p-2.5 border border-gray-200 rounded-xl font-bold bg-white outline-none">
+                <div class="flex items-center gap-1 bg-white p-1 px-3 border border-gray-200 rounded-xl w-32">
+                  <span class="text-xs font-bold text-gray-400">Vol:</span>
+                  <input type="number" id="o4-vol" step="any" placeholder="0" class="w-full p-1 text-center font-black text-emerald-700 other-vol outline-none" oninput="calculateAll()">
+                  <span class="text-xs font-bold text-gray-500">ml</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -361,7 +449,6 @@
       }
       updateProductDetails();
       
-      // ถ้าข้อมูลเดิมระบุค่าตัวเลขมา ให้ใส่ในช่อง Custom ด้วยหากเป็นกลุ่มเลือกกรอกปริมาตรได้
       if(productSelect.options[productSelect.selectedIndex].classList.contains('custom-vol')) {
         document.getElementById('customProductVol').value = o.productVol || "";
       }
@@ -370,14 +457,11 @@
       document.getElementById('bco').value = o.bco || 0;
       document.getElementById('vitalipid').value = o.vitalipid || 0;
       if (o.vitType) { selectVitamin(o.vitType); document.getElementById('vitVol').value = o.vitVol || 0; }
-      document.getElementById('o1-name').value = o.other1Name || "";
-      document.getElementById('o1-vol').value = o.other1Vol || "";
-      document.getElementById('o2-name').value = o.other2Name || "";
-      document.getElementById('o2-vol').value = o.other2Vol || "";
-      document.getElementById('o3-name').value = o.other3Name || "";
-      document.getElementById('o3-vol').value = o.other3Vol || "";
+      
+      // ดึงข้อมูลสารอื่นๆ เดิม (สำหรับ Free Text ช่อง 4)
       document.getElementById('o4-name').value = o.other4Name || "";
       document.getElementById('o4-vol').value = o.other4Vol || "";
+      
       document.getElementById('manualRate').value = o.rate || "";
       calculateAll();
       alert("✅ ดึงข้อมูลสำเร็จ! ตรวจสอบความถูกต้องก่อนบันทึกนะคะ");
@@ -450,17 +534,13 @@
         return;
       }
 
-      // ตรวจสอบว่าเป็นกลุ่มสารอาหารที่เปิดให้กรอกปริมาตรเองได้หรือไม่
       if (o.classList.contains('custom-vol')) {
         customVolContainer.classList.remove('hidden');
-        // ถ้าไม่มีค่ากรอกไว้ก่อนหน้า ให้ดึง Default ของถุงขึ้นมาแสดงก่อน
         if (!customProductVol.value) {
           customProductVol.value = o.getAttribute('data-vol');
         }
-        // สั่งคำนวณแคลอรีและปริมาตรใหม่ตามกล่องข้อความ
         handleCustomVolInput();
       } else {
-        // ผลิตภัณฑ์แบบ Standard
         customVolContainer.classList.add('hidden');
         customProductVol.value = "";
         document.getElementById('prodVol').textContent = o.getAttribute('data-vol') || 0;
@@ -482,28 +562,98 @@
       calculateAll();
     }
 
-    // ฟังก์ชันคำนวณแคลอรีอัตโนมัติเมื่อผู้ใช้พิมพ์แก้ไขปริมาตรเอง
     function handleCustomVolInput() {
       const s = document.getElementById('productSelect');
-      const o = s.options[s.selectedIndex];
       const customProductVol = document.getElementById('customProductVol');
       
       let inputVol = parseFloat(customProductVol.value) || 0;
       let calculatedKcal = 0;
 
-      // จัดการคำนวณสัดส่วน Kcal ตามปริมาตรจริงที่กรอก
       if (s.value === "aminoplasmal_15") {
-        calculatedKcal = inputVol * 0.6; // 15% Aminoplasmal คิดพลังงานที่ 0.6 kcal/ml
+        calculatedKcal = inputVol * 0.6;
       } else if (s.value === "amiparen_10") {
-        calculatedKcal = inputVol * 0.4; // 10% Amiparen คิดพลังงานที่ 0.4 kcal/ml
+        calculatedKcal = inputVol * 0.4;
       } else if (s.value === "smoflipid_20" || s.value === "clinoleic_20" || s.value === "intralipid_20") {
-        calculatedKcal = inputVol * 2.0; // กลุ่ม Lipid 20% คิดพลังงานที่ 2.0 kcal/ml
+        calculatedKcal = inputVol * 2.0;
       }
 
-      // แสดงค่าผลลัพธ์ลงใน UI
       document.getElementById('prodVol').textContent = inputVol;
       document.getElementById('prodKcal').textContent = Math.round(calculatedKcal);
       
+      calculateAll();
+    }
+
+    /* --- ฟังก์ชันการทำงานของ Smart Additives (ช่อง 1-3) --- */
+    const additiveUnits = {
+      ri: "Unit",
+      hydrocortisone: "mg",
+      nacl3: "mEq",
+      kcl: "mEq",
+      glycophos: "mmol",
+      heparin: "Unit",
+      peditrace: "ml"
+    };
+
+    function handleSmartAdditiveChange(index) {
+      const select = document.getElementById(`o${index}-select`);
+      const reqContainer = document.getElementById(`o${index}-req-container`);
+      const reqInput = document.getElementById(`o${index}-req`);
+      const unitSpan = document.getElementById(`o${index}-unit`);
+      const volInput = document.getElementById(`o${index}-vol`);
+
+      const val = select.value;
+      reqInput.value = "";
+      volInput.value = "";
+
+      if (!val) {
+        reqContainer.classList.add('hidden');
+        volInput.readOnly = false;
+      } else if (val === 'peditrace') {
+        reqContainer.classList.add('hidden');
+        volInput.readOnly = false;
+        volInput.focus();
+      } else {
+        reqContainer.classList.remove('hidden');
+        unitSpan.textContent = additiveUnits[val] || "";
+        volInput.readOnly = true; // ล็อคให้คำนวณอัตโนมัติ
+        reqInput.focus();
+      }
+      calculateAll();
+    }
+
+    function calculateSmartAdditive(index) {
+      const select = document.getElementById(`o${index}-select`);
+      const reqVal = parseFloat(document.getElementById(`o${index}-req`).value) || 0;
+      const volInput = document.getElementById(`o${index}-vol`);
+
+      let calculatedMl = 0;
+      const type = select.value;
+
+      if (reqVal > 0) {
+        switch (type) {
+          case 'ri':
+            calculatedMl = reqVal / 100; // 100u/ml
+            break;
+          case 'hydrocortisone':
+            calculatedMl = reqVal / 50; // 50mg/ml
+            break;
+          case 'nacl3':
+            calculatedMl = reqVal * 2; // 1 mEq / 2 ml
+            break;
+          case 'kcl':
+            calculatedMl = reqVal * 0.5; // 1 mEq / 0.5 ml
+            break;
+          case 'glycophos':
+            calculatedMl = reqVal * 1; // 1 mmol / 1 ml
+            break;
+          case 'heparin':
+            calculatedMl = reqVal / 500; // 500u/ml
+            break;
+        }
+      }
+
+      // ปัดเศษทศนิยม 2 ตำแหน่ง
+      volInput.value = calculatedMl > 0 ? parseFloat(calculatedMl.toFixed(2)) : "";
       calculateAll();
     }
 
@@ -523,6 +673,25 @@
       else { rh.textContent = `👉 กรุณาเลือก Product...`; rh.style.color = "#facc15"; }
     }
 
+    // ฟังก์ชันรวบรวมข้อมูลสารอื่นเพื่อส่งไปยัง Backend / พิมพ์ฉลาก
+    function getSmartAdditiveData(index) {
+      const select = document.getElementById(`o${index}-select`);
+      const reqVal = document.getElementById(`o${index}-req`).value;
+      const volVal = document.getElementById(`o${index}-vol`).value;
+
+      if (!select.value) return { name: "", vol: "" };
+
+      const selectedOptionText = select.options[select.selectedIndex].text;
+      
+      if (select.value === 'peditrace') {
+        return { name: selectedOptionText, vol: volVal };
+      }
+
+      const unit = additiveUnits[select.value] || "";
+      const formattedName = reqVal ? `${selectedOptionText} [${reqVal} ${unit}]` : selectedOptionText;
+      return { name: formattedName, vol: volVal };
+    }
+
     async function saveOrder() {
       const saveBtn = document.getElementById('saveBtn');
       const hn = document.getElementById('hn').value;
@@ -532,6 +701,12 @@
       if (productSelect.value === "") { alert("⚠️ กรุณาเลือกผลิตภัณฑ์ค่ะ"); return; }
       const v = (id) => document.getElementById(id).value;
       const t = (id) => document.getElementById(id).textContent;
+
+      // ดึงข้อมูล Smart Additives ช่อง 1-3
+      const o1 = getSmartAdditiveData(1);
+      const o2 = getSmartAdditiveData(2);
+      const o3 = getSmartAdditiveData(3);
+
       const formData = new URLSearchParams();
       formData.append("action", "saveOrder");
       formData.append("orderDate", v('orderDate'));
@@ -549,17 +724,21 @@
       formData.append("vitVol", v('vitVol'));
       formData.append("bco", v('bco'));
       formData.append("vitalipid", v('vitalipid'));
-      formData.append("other1Name", v('o1-name'));
-      formData.append("other1Vol", v('o1-vol'));
-      formData.append("other2Name", v('o2-name'));
-      formData.append("other2Vol", v('o2-vol'));
-      formData.append("other3Name", v('o3-name'));
-      formData.append("other3Vol", v('o3-vol'));
+      
+      // ส่งค่าชื่อและ ml ของสารช่อง 1-4
+      formData.append("other1Name", o1.name);
+      formData.append("other1Vol", o1.vol);
+      formData.append("other2Name", o2.name);
+      formData.append("other2Vol", o2.vol);
+      formData.append("other3Name", o3.name);
+      formData.append("other3Vol", o3.vol);
       formData.append("other4Name", v('o4-name'));
       formData.append("other4Vol", v('o4-vol'));
+
       formData.append("totalVol", t('totalVolDisplay'));
       formData.append("rate", v('manualRate') || (parseFloat(t('totalVolDisplay').replace(/,/g, '')) / 24).toFixed(1));
       formData.append("recordedBy", sessionStorage.getItem('tpnUser'));
+      
       saveBtn.disabled = true;
       saveBtn.innerHTML = "⏳ กำลังบันทึก...";
       try {
