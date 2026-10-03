@@ -676,24 +676,36 @@
       else { rh.textContent = `👉 กรุณาเลือก Product...`; rh.style.color = "#facc15"; }
     }
 
-    // รวบรวมข้อมูล Smart Additive ทั้งหมดส่งไปเซฟ
-    function getSmartAdditiveData(index) {
-      const select = document.getElementById(`o${index}-select`);
-      const reqVal = document.getElementById(`o${index}-req`).value;
-      const volVal = document.getElementById(`o${index}-vol`).value;
+// รวบรวมข้อมูล Smart Additive ทั้งหมดส่งไปเซฟ และจัดฟอร์แมตชื่อสำหรับแสดงบนฉลาก
+function getSmartAdditiveData(index) {
+  const select = document.getElementById(`o${index}-select`);
+  const reqVal = document.getElementById(`o${index}-req`).value;
+  const volVal = document.getElementById(`o${index}-vol`).value;
 
-      if (!select.value) return { name: "", vol: "", type: "", req: "" };
+  if (!select.value) return { name: "", vol: "", type: "", req: "" };
 
-      const selectedOptionText = select.options[select.selectedIndex].text;
-      
-      if (select.value === 'peditrace') {
-        return { name: selectedOptionText, vol: volVal, type: select.value, req: "" };
-      }
+  // ตัดตัวช่วยคำนวณออก ให้เหลือเฉพาะชื่อยาหลักสำหรับแสดงบนฉลาก
+  const displayNames = {
+    ri: "RI (Actrapid®)",
+    hydrocortisone: "Hydrocortisone",
+    nacl3: "3% NaCl",
+    kcl: "KCl",
+    glycophos: "Glycophos",
+    heparin: "Heparin",
+    peditrace: "Peditrace"
+  };
 
-      const unit = additiveUnits[select.value] || "";
-      const formattedName = reqVal ? `${selectedOptionText} [${reqVal} ${unit}]` : selectedOptionText;
-      return { name: formattedName, vol: volVal, type: select.value, req: reqVal };
-    }
+  const cleanName = displayNames[select.value] || select.options[select.selectedIndex].text;
+
+  if (select.value === 'peditrace') {
+    return { name: cleanName, vol: volVal, type: select.value, req: "" };
+  }
+
+  const unit = additiveUnits[select.value] || "";
+  const formattedName = reqVal ? `${cleanName} [${reqVal} ${unit}]` : cleanName;
+  
+  return { name: formattedName, vol: volVal, type: select.value, req: reqVal };
+}
 
     async function saveOrder() {
       const saveBtn = document.getElementById('saveBtn');
