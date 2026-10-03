@@ -189,7 +189,6 @@
           </div>
         </div>
 
-        <!-- Section Add สารอื่นๆ ที่ปรับปรุงใหม่ -->
         <div class="space-y-4 pt-8 border-t border-emerald-50 text-left">
           <span class="text-xl font-black text-gray-800 italic block uppercase tracking-widest mb-4">Add สารอื่นๆ</span>
           <div class="grid grid-cols-1 gap-4" id="other-additives">
@@ -272,7 +271,7 @@
               </div>
             </div>
 
-            <!-- สารช่องที่ 4 (Free Text สำหรับสารอื่นๆ/แปลกๆ) -->
+            <!-- สารช่องที่ 4 (Free Text) -->
             <div class="bg-gray-50 p-3 rounded-2xl border border-gray-100">
               <div class="flex gap-3">
                 <input type="text" id="o4-name" placeholder="ชื่อสาร 4 (ระบุเองอิสระ)" class="flex-1 p-2.5 border border-gray-200 rounded-xl font-bold bg-white outline-none">
@@ -313,7 +312,6 @@
 
     async function handleLogin(e) {
       if (e) e.preventDefault();
-      
       const u = document.getElementById('username').value.trim();
       const p = document.getElementById('password').value.trim();
       const btn = document.getElementById('loginBtn');
@@ -335,11 +333,7 @@
         formData.append("username", u);
         formData.append("password", p);
 
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: formData
-        });
-        
+        const response = await fetch(SCRIPT_URL, { method: 'POST', body: formData });
         const result = await response.json();
 
         if (result.success) {
@@ -437,6 +431,7 @@
       }
     }
 
+    // --- ปรับปรุงการนำเอา Order เดิมมาเติมช่อง Smart Additives ---
     function applyLatestOrder() {
       if (!cachedLatestOrder) return;
       const o = cachedLatestOrder;
@@ -458,13 +453,36 @@
       document.getElementById('vitalipid').value = o.vitalipid || 0;
       if (o.vitType) { selectVitamin(o.vitType); document.getElementById('vitVol').value = o.vitVol || 0; }
       
-      // ดึงข้อมูลสารอื่นๆ เดิม (สำหรับ Free Text ช่อง 4)
+      // ดึงค่าสาร Smart Additive (ช่อง 1-3)
+      applySmartAdditiveOrder(1, o.other1Type, o.other1Req, o.other1Vol);
+      applySmartAdditiveOrder(2, o.other2Type, o.other2Req, o.other2Vol);
+      applySmartAdditiveOrder(3, o.other3Type, o.other3Req, o.other3Vol);
+
+      // ดึงค่าสาร Free Text (ช่อง 4)
       document.getElementById('o4-name').value = o.other4Name || "";
       document.getElementById('o4-vol').value = o.other4Vol || "";
       
       document.getElementById('manualRate').value = o.rate || "";
       calculateAll();
       alert("✅ ดึงข้อมูลสำเร็จ! ตรวจสอบความถูกต้องก่อนบันทึกนะคะ");
+    }
+
+    // ฟังก์ชันช่วยใส่ค่าให้ Smart Additives จาก order เดิม
+    function applySmartAdditiveOrder(index, type, req, vol) {
+      const select = document.getElementById(`o${index}-select`);
+      if (type) {
+        select.value = type;
+        handleSmartAdditiveChange(index);
+        if (type === 'peditrace') {
+          document.getElementById(`o${index}-vol`).value = vol || "";
+        } else {
+          document.getElementById(`o${index}-req`).value = req || "";
+          calculateSmartAdditive(index);
+        }
+      } else {
+        select.value = "";
+        handleSmartAdditiveChange(index);
+      }
     }
 
     let currentVitType = '';
@@ -565,7 +583,6 @@
     function handleCustomVolInput() {
       const s = document.getElementById('productSelect');
       const customProductVol = document.getElementById('customProductVol');
-      
       let inputVol = parseFloat(customProductVol.value) || 0;
       let calculatedKcal = 0;
 
@@ -579,11 +596,10 @@
 
       document.getElementById('prodVol').textContent = inputVol;
       document.getElementById('prodKcal').textContent = Math.round(calculatedKcal);
-      
       calculateAll();
     }
 
-    /* --- ฟังก์ชันการทำงานของ Smart Additives (ช่อง 1-3) --- */
+    /* --- Smart Additives Logic --- */
     const additiveUnits = {
       ri: "Unit",
       hydrocortisone: "mg",
@@ -615,7 +631,7 @@
       } else {
         reqContainer.classList.remove('hidden');
         unitSpan.textContent = additiveUnits[val] || "";
-        volInput.readOnly = true; // ล็อคให้คำนวณอัตโนมัติ
+        volInput.readOnly = true;
         reqInput.focus();
       }
       calculateAll();
@@ -631,28 +647,15 @@
 
       if (reqVal > 0) {
         switch (type) {
-          case 'ri':
-            calculatedMl = reqVal / 100; // 100u/ml
-            break;
-          case 'hydrocortisone':
-            calculatedMl = reqVal / 50; // 50mg/ml
-            break;
-          case 'nacl3':
-            calculatedMl = reqVal * 2; // 1 mEq / 2 ml
-            break;
-          case 'kcl':
-            calculatedMl = reqVal * 0.5; // 1 mEq / 0.5 ml
-            break;
-          case 'glycophos':
-            calculatedMl = reqVal * 1; // 1 mmol / 1 ml
-            break;
-          case 'heparin':
-            calculatedMl = reqVal / 500; // 500u/ml
-            break;
+          case 'ri': calculatedMl = reqVal / 100; break;
+          case 'hydrocortisone': calculatedMl = reqVal / 50; break;
+          case 'nacl3': calculatedMl = reqVal * 2; break;
+          case 'kcl': calculatedMl = reqVal * 0.5; break;
+          case 'glycophos': calculatedMl = reqVal * 1; break;
+          case 'heparin': calculatedMl = reqVal / 500; break;
         }
       }
 
-      // ปัดเศษทศนิยม 2 ตำแหน่ง
       volInput.value = calculatedMl > 0 ? parseFloat(calculatedMl.toFixed(2)) : "";
       calculateAll();
     }
@@ -673,23 +676,23 @@
       else { rh.textContent = `👉 กรุณาเลือก Product...`; rh.style.color = "#facc15"; }
     }
 
-    // ฟังก์ชันรวบรวมข้อมูลสารอื่นเพื่อส่งไปยัง Backend / พิมพ์ฉลาก
+    // รวบรวมข้อมูล Smart Additive ทั้งหมดส่งไปเซฟ
     function getSmartAdditiveData(index) {
       const select = document.getElementById(`o${index}-select`);
       const reqVal = document.getElementById(`o${index}-req`).value;
       const volVal = document.getElementById(`o${index}-vol`).value;
 
-      if (!select.value) return { name: "", vol: "" };
+      if (!select.value) return { name: "", vol: "", type: "", req: "" };
 
       const selectedOptionText = select.options[select.selectedIndex].text;
       
       if (select.value === 'peditrace') {
-        return { name: selectedOptionText, vol: volVal };
+        return { name: selectedOptionText, vol: volVal, type: select.value, req: "" };
       }
 
       const unit = additiveUnits[select.value] || "";
       const formattedName = reqVal ? `${selectedOptionText} [${reqVal} ${unit}]` : selectedOptionText;
-      return { name: formattedName, vol: volVal };
+      return { name: formattedName, vol: volVal, type: select.value, req: reqVal };
     }
 
     async function saveOrder() {
@@ -702,7 +705,6 @@
       const v = (id) => document.getElementById(id).value;
       const t = (id) => document.getElementById(id).textContent;
 
-      // ดึงข้อมูล Smart Additives ช่อง 1-3
       const o1 = getSmartAdditiveData(1);
       const o2 = getSmartAdditiveData(2);
       const o3 = getSmartAdditiveData(3);
@@ -725,13 +727,22 @@
       formData.append("bco", v('bco'));
       formData.append("vitalipid", v('vitalipid'));
       
-      // ส่งค่าชื่อและ ml ของสารช่อง 1-4
+      // ส่งข้อมูลสาร
       formData.append("other1Name", o1.name);
       formData.append("other1Vol", o1.vol);
+      formData.append("other1Type", o1.type); // ส่งชนิดสารไปเก็บ
+      formData.append("other1Req", o1.req);   // ส่ง Req ไปเก็บ
+
       formData.append("other2Name", o2.name);
       formData.append("other2Vol", o2.vol);
+      formData.append("other2Type", o2.type);
+      formData.append("other2Req", o2.req);
+
       formData.append("other3Name", o3.name);
       formData.append("other3Vol", o3.vol);
+      formData.append("other3Type", o3.type);
+      formData.append("other3Req", o3.req);
+
       formData.append("other4Name", v('o4-name'));
       formData.append("other4Vol", v('o4-vol'));
 
