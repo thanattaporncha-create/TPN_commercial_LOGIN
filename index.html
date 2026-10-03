@@ -707,75 +707,84 @@ function getSmartAdditiveData(index) {
   return { name: formattedName, vol: volVal, type: select.value, req: reqVal };
 }
 
-    async function saveOrder() {
-      const saveBtn = document.getElementById('saveBtn');
-      const hn = document.getElementById('hn').value;
-      const pName = document.getElementById('patientName').value;
-      if (!hn || !pName) { alert("⚠️ กรุณาระบุ HN และชื่อคนไข้ค่ะ"); return; }
-      const productSelect = document.getElementById('productSelect');
-      if (productSelect.value === "") { alert("⚠️ กรุณาเลือกผลิตภัณฑ์ค่ะ"); return; }
-      const v = (id) => document.getElementById(id).value;
-      const t = (id) => document.getElementById(id).textContent;
+async function saveOrder() {
+  const saveBtn = document.getElementById('saveBtn');
+  const hn = document.getElementById('hn').value;
+  const pName = document.getElementById('patientName').value;
+  if (!hn || !pName) { alert("⚠️️ กรุณาระบุ HN และชื่อคนไข้ค่ะ"); return; }
+  const productSelect = document.getElementById('productSelect');
+  if (productSelect.value === "") { alert("⚠️ กรุณาเลือกผลิตภัณฑ์ค่ะ"); return; }
+  const v = (id) => document.getElementById(id).value;
+  const t = (id) => document.getElementById(id).textContent;
 
-      const o1 = getSmartAdditiveData(1);
-      const o2 = getSmartAdditiveData(2);
-      const o3 = getSmartAdditiveData(3);
+  const o1 = getSmartAdditiveData(1);
+  const o2 = getSmartAdditiveData(2);
+  const o3 = getSmartAdditiveData(3);
 
-      const formData = new URLSearchParams();
-      formData.append("action", "saveOrder");
-      formData.append("orderDate", v('orderDate'));
-      formData.append("hn", hn);
-      formData.append("patientName", pName);
-      formData.append("ward", v('wardInput'));
-      formData.append("route", document.querySelector('input[name="route"]:checked').value);
-      formData.append("bw", v('bw'));
-      formData.append("productName", productSelect.options[productSelect.selectedIndex].text);
-      formData.append("productVol", t('prodVol'));
-      formData.append("productKcal", t('prodKcal'));
-      formData.append("quantity", v('bagCount'));
-      formData.append("addamel", v('addamel'));
-      formData.append("vitType", currentVitType);
-      formData.append("vitVol", v('vitVol'));
-      formData.append("bco", v('bco'));
-      formData.append("vitalipid", v('vitalipid'));
-      
-      // ส่งข้อมูลสาร
-      formData.append("other1Name", o1.name);
-      formData.append("other1Vol", o1.vol);
-      formData.append("other1Type", o1.type); // ส่งชนิดสารไปเก็บ
-      formData.append("other1Req", o1.req);   // ส่ง Req ไปเก็บ
+  const formData = new URLSearchParams();
+  formData.append("action", "saveOrder");
+  formData.append("orderDate", v('orderDate'));
+  formData.append("hn", hn);
+  formData.append("patientName", pName);
+  formData.append("ward", v('wardInput'));
+  formData.append("route", document.querySelector('input[name="route"]:checked').value);
+  formData.append("bw", v('bw'));
+  formData.append("productName", productSelect.options[productSelect.selectedIndex].text);
+  formData.append("productVol", t('prodVol'));
+  formData.append("productKcal", t('prodKcal'));
+  formData.append("quantity", v('bagCount'));
+  formData.append("addamel", v('addamel'));
+  formData.append("vitType", currentVitType);
+  formData.append("vitVol", v('vitVol'));
+  formData.append("bco", v('bco'));
+  formData.append("vitalipid", v('vitalipid'));
+  
+  // ส่งข้อมูลสาร
+  formData.append("other1Name", o1.name);
+  formData.append("other1Vol", o1.vol);
+  formData.append("other1Type", o1.type);
+  formData.append("other1Req", o1.req);
 
-      formData.append("other2Name", o2.name);
-      formData.append("other2Vol", o2.vol);
-      formData.append("other2Type", o2.type);
-      formData.append("other2Req", o2.req);
+  formData.append("other2Name", o2.name);
+  formData.append("other2Vol", o2.vol);
+  formData.append("other2Type", o2.type);
+  formData.append("other2Req", o2.req);
 
-      formData.append("other3Name", o3.name);
-      formData.append("other3Vol", o3.vol);
-      formData.append("other3Type", o3.type);
-      formData.append("other3Req", o3.req);
+  formData.append("other3Name", o3.name);
+  formData.append("other3Vol", o3.vol);
+  formData.append("other3Type", o3.type);
+  formData.append("other3Req", o3.req);
 
-      formData.append("other4Name", v('o4-name'));
-      formData.append("other4Vol", v('o4-vol'));
+  formData.append("other4Name", v('o4-name'));
+  formData.append("other4Vol", v('o4-vol'));
 
-      formData.append("totalVol", t('totalVolDisplay'));
-      formData.append("rate", v('manualRate') || (parseFloat(t('totalVolDisplay').replace(/,/g, '')) / 24).toFixed(1));
-      formData.append("recordedBy", sessionStorage.getItem('tpnUser'));
-      
-      saveBtn.disabled = true;
-      saveBtn.innerHTML = "⏳ กำลังบันทึก...";
-      try {
-        await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData });
-        const queryString = formData.toString();
-        window.open("label.html?" + queryString, "_blank");
-        alert("✅ บันทึกข้อมูลเรียบร้อยแล้วค่ะ!");
-        location.reload();
-      } catch (e) {
-        alert("❌ เกิดข้อผิดพลาด: " + e.message);
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = "💾 บันทึกและพิมพ์ฉลาก";
-      }
-    }
+  formData.append("totalVol", t('totalVolDisplay'));
+  formData.append("rate", v('manualRate') || (parseFloat(t('totalVolDisplay').replace(/,/g, '')) / 24).toFixed(1));
+  formData.append("recordedBy", sessionStorage.getItem('tpnUser'));
+  
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = "⏳ กำลังบันทึก...";
+  try {
+    // บันทึกลง Google Sheet
+    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: formData });
+    
+    // สร้าง URL สำหรับ label.html โดยบังคับตัดคำ 100u/ml, (50mg/ml), (Diluted) ออกจาก URL พิมพ์ฉลากทันที
+    const labelParams = new URLSearchParams(formData);
+    ['other1Name', 'other2Name', 'other3Name'].forEach(key => {
+      let val = labelParams.get(key) || '';
+      val = val.replace(" 100u/ml", "").replace(" (50mg/ml)", "").replace(" (Diluted)", "");
+      labelParams.set(key, val);
+    });
+
+    window.open("label.html?" + labelParams.toString(), "_blank");
+    alert("✅ บันทึกข้อมูลเรียบร้อยแล้วค่ะ!");
+    location.reload();
+  } catch (e) {
+    alert("❌ เกิดข้อผิดพลาด: " + e.message);
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = "💾 บันทึกและพิมพ์ฉลาก";
+  }
+}
 
     window.onload = () => { if (sessionStorage.getItem('tpnUser')) showMainApp(); };
   </script>
